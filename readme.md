@@ -31,3 +31,9 @@ Addition
 - Add discounts, e.g. buy three and get one for free.
 
 - Create unit tests for calculation logic.
+
+# install
+
+```zsh
+npx stock-balance
+```
