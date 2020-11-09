@@ -37,3 +37,42 @@ Addition
 ```zsh
 npx stock-balance
 ```
+
+## TODO
+
+- [x] create a repo
+- [x] publish to npm
+- [x] Choose a library to use for user interaction
+- [] create Product class :
+  product = {
+  name: string,
+  category: [],
+  quantity: number,
+  price: number,
+  delivered: false,
+  belongToGroup:[],
+  }
+- [] separate Logic folder containing the logic that could be shared with a frontend framework and the CLI interface
+
+- [] CLI will ask questions
+
+  - [] when You enter the programme will show a welcome screen with commands available then
+  - [] question there is no products in your store yet, would you like to add one now ? Y/N
+    [] if No show the commands available.
+    [] Yes -> start the create new product obj process
+    [] what is your product name ? -> string
+    [] what is the count ? -> number
+    [] what category example "cloth" "electric" ? -> string
+    [] what is the price of this product in SEK? -> float
+
+- [] Add item prices and show total amounts at sale.
+- [] Add discounts, e.g. buy three and get one for free.
+- [] create function to check how many product you sell and how many is delivered so it update the count AFTER the deliver is made while keeping the count reserved for future sells not be allowed
+
+- [] ask user to choose between automatic delivery on 10 or 5 items or manually deliver
+
+  - [] wish algorithm you want to use for this task?
+    [] Automatic delivery if the order count is 5 or 10
+    [] manually deliver orders
+
+- [] Create unit tests for computational logic.
