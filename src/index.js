@@ -1,116 +1,165 @@
-#!/usr/bin/env node
-/**
- * Pizza delivery prompt example
- * run example by writing `node pizza.js` in your console
- */
-
 "use strict";
-var inquirer = require("inquirer");
+const inquirer = require("inquirer");
+const Product = require("./Models/Product.js");
+const utils = require("./utils/index.js");
+const store = require("./Store/index.js");
 
-console.log("Hi, welcome to Node Pizza");
+const actions = {
+  createNewProduct: "Create new product",
+  listProduct: "List Product",
+  sell: "Sell",
+  deliver: "Deliver",
+};
+const configValues = {
+  priceMaxVal: 1000000,
+  deliveredMaxVal: 1000000,
+  defaultProductCount: 10,
+  defaultPrice: 10,
+  defaultDeliveredNumber: 0,
+};
 
-var questions = [
-  {
-    type: "confirm",
-    name: "toBeDelivered",
-    message: "Is this for delivery?",
-    default: false,
-  },
-  {
-    type: "input",
-    name: "phone",
-    message: "What's your phone number?",
-    validate: function (value) {
-      var pass = value.match(
-        /^([01]{1})?[-.\s]?\(?(\d{3})\)?[-.\s]?(\d{3})[-.\s]?(\d{4})\s?((?:#|ext\.?\s?|x\.?\s?){1}(?:\d+)?)?$/i
-      );
-      if (pass) {
-        return true;
+const userActions = {
+  type: "list",
+  name: "mainMenu",
+  message: "What action you wanna take?\n\n",
+  choices: [
+    actions.createNewProduct,
+    new inquirer.Separator(),
+    actions.listProduct,
+    actions.sell,
+    actions.deliver,
+  ],
+};
+
+function main() {
+  utils.welcome();
+  init();
+}
+
+function init() {
+  inquirer
+    .prompt(userActions)
+    .then((answers) => {
+      if (answers.mainMenu === actions.createNewProduct) {
+        // encounter1();
+        createProduct();
+      } else {
+        console.log("\nYou cannot go that way. Try again");
+        main();
       }
+    })
+    .catch((err) => console.log(err));
+}
 
-      return "Please enter a valid phone number";
-    },
-  },
-  {
-    type: "list",
-    name: "size",
-    message: "What size do you need?",
-    choices: ["Large", "Medium", "Small"],
-    filter: function (val) {
-      return val.toLowerCase();
-    },
-  },
-  {
-    type: "input",
-    name: "quantity",
-    message: "How many do you need?",
-    validate: function (value) {
-      var valid = !isNaN(parseFloat(value));
-      return valid || "Please enter a number";
-    },
-    filter: Number,
-  },
-  {
-    type: "expand",
-    name: "toppings",
-    message: "What about the toppings?",
-    choices: [
+function createProduct() {
+  console.log("\nCreate new Product");
+  console.log("__________________");
+  console.log("here we ask questions about new product");
+  inquirer
+    .prompt([
       {
-        key: "p",
-        name: "Pepperoni and cheese",
-        value: "PepperoniCheese",
+        type: "input",
+        message: "enter your product name",
+        name: "name",
+        validate: function (value) {
+          let pass = value.match(/^(?=.*[A-Za-z])[A-Za-z\d]{3,}$/i);
+          if (pass) {
+            return true;
+          }
+
+          return "Please enter a valid string with at least 3 chars";
+        },
       },
       {
-        key: "a",
-        name: "All dressed",
-        value: "alldressed",
+        type: "input",
+        message: `enter product category`,
+        name: "category",
+        validate: function (value) {
+          let pass = value.match(/^(?=.*[A-Za-z])[A-Za-z\d]{3,}$/i);
+          if (pass) {
+            return true;
+          }
+
+          return "Please enter a valid string with at least 3 chars";
+        },
+        default: function () {
+          return "general";
+        },
       },
       {
-        key: "w",
-        name: "Hawaiian",
-        value: "hawaiian",
+        type: "input",
+        message: "Enter product count",
+        name: "quantity",
+        validate: function (value) {
+          if (Math.sign(value) === 1 && value < configValues.priceMaxVal) {
+            return true;
+          }
+          return "Please enter a valid number";
+        },
+        default: function () {
+          return configValues.defaultProductCount;
+        },
       },
-    ],
-  },
-  {
-    type: "rawlist",
-    name: "beverage",
-    message: "You also get a free 2L beverage",
-    choices: ["Pepsi", "7up", "Coke"],
-  },
-  {
-    type: "input",
-    name: "comments",
-    message: "Any comments on your purchase experience?",
-    default: "Nope, all good!",
-  },
-  {
-    type: "list",
-    name: "prize",
-    message: "For leaving a comment, you get a freebie",
-    choices: ["cake", "fries"],
-    when: function (answers) {
-      return answers.comments !== "Nope, all good!";
-    },
-  },
-];
+      {
+        type: "input",
+        message: "Enter product price in SEK",
+        name: "price",
+        validate: function (value) {
+          if (Math.sign(value) === 1) {
+            return true;
+          }
+          return "Please enter a valid number";
+        },
+        default: function () {
+          return configValues.defaultPrice;
+        },
+      },
+      {
+        type: "input",
+        message: "How many has been sold?",
+        name: "sold ",
+        validate: function (value) {
+          if (
+            typeof value !== NaN &&
+            value >= 0 &&
+            value < configValues.priceMaxVal
+          ) {
+            return true;
+          }
+          return "Please enter a valid number";
+        },
+        default: function () {
+          return configValues.defaultDeliveredNumber;
+        },
+      },
+      {
+        type: "input",
+        message: "How many has been delivered?",
+        name: "delivered ",
+        validate: function (value) {
+          if (
+            typeof value !== NaN &&
+            value >= 0 &&
+            value < configValues.deliveredMaxVal
+          ) {
+            return true;
+          }
+          return "Please enter a valid number";
+        },
+        default: function () {
+          return configValues.defaultDeliveredNumber;
+        },
+      },
+    ])
+    .then((answers) => {
+      console.log(JSON.stringify(answers, null, "  "));
+      let collectedData = new Product.Product(answers);
+      store.stocks.push(collectedData.getProduct());
+      console.log("You can check your product buy selecting list");
+      console.table(store.stocks);
+      init();
+    })
+    .catch((err) => console.error(err));
+}
 
-inquirer.prompt(questions).then((answers) => {
-  console.log("\nOrder receipt:");
-  console.log(JSON.stringify(answers, null, "  "));
-});
-
-// const store = require("./Store/index.js");
-// const productController = require("./Controllers/ProductsController.js");
-// const welcome = require("./Controllers/welcome.js");
-
-// const theProducts = store.Products;
-// const structDatas = productController.structDatas;
-
-// function logTable(data) {
-//   console.table(data);
-// }
-
-// logTable(structDatas);
-// welcome.welcome();
-// console.log(theProducts);
+main();

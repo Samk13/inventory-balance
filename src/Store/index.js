@@ -1,5 +1,5 @@
-Products = ["test", "12", "adkfj"];
+stocks = [];
 
 module.exports = {
-  Products,
+  stocks,
 };
