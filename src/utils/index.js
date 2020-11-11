@@ -1,14 +1,3 @@
-function welcome() {
-  // chalk dependency could be an option here
-  console.log(
-    "\x1b[33m%s\x1b[0m",
-    "\n\n\n*************************************"
-  );
-  console.log("\033[94m", "\n** >> WELCOME TO STOCK BALANCER << **");
-  console.log("\x1b[33m%s\x1b[0m", "** >> Created by Sam Arbid 2020 << **");
-  console.log("\033[94m", "\n*************************************\n\n\n");
-}
-
 function GenerateId() {
   let dt = new Date();
   let seed =
@@ -22,7 +11,19 @@ function GenerateId() {
   return Math.floor(Math.pow(8, 8 - 1) + Math.random() * Math.floor(seed));
 }
 
+function objIterator(val) {
+  // for ([key, value] of Object.entries(val)) {
+  //   return value;
+  // }
+  const result = [];
+  const x = Object.entries(val);
+  for (let i = 0; i < x.length; i++) {
+    result.push(x[i][1]);
+  }
+  return result;
+}
+
 module.exports = {
-  welcome,
   GenerateId,
+  objIterator,
 };

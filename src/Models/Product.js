@@ -16,11 +16,10 @@ class Product {
       id: this._id,
       name: this._name,
       category: this._category,
-      quantity: this._quantity,
+      quantity: parseInt(this._quantity),
       price: `${this._price} KR`,
       delivered: this._delivered,
       sold: this._sold,
-      group: [this._group],
     };
   }
 
