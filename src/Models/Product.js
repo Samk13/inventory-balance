@@ -24,19 +24,24 @@ class Product {
   }
 
   getDelivered() {
-    return this.delivered;
+    return this._delivered;
   }
 
   setDelivered(value) {
-    return (this.delivered = value);
+    this._delivered = value;
+  }
+
+  getCategory() {
+    return this._category;
   }
 
   getSold() {
-    return this.sold;
+    return this._sold;
   }
 
   setSold(value) {
-    return (this.sold = value);
+    this.sold = value;
+    console.log(`${value} has been sold successfully`);
   }
 }
 

@@ -12,15 +12,7 @@ function GenerateId() {
 }
 
 function objIterator(val) {
-  // for ([key, value] of Object.entries(val)) {
-  //   return value;
-  // }
-  const result = [];
-  const x = Object.entries(val);
-  for (let i = 0; i < x.length; i++) {
-    result.push(x[i][1]);
-  }
-  return result;
+  return Object.values(val);
 }
 
 module.exports = {

@@ -4,6 +4,7 @@ const actions = {
   sell: "Sell",
   deliver: "Deliver",
 };
+
 const configValues = {
   priceMaxVal: 1000000,
   deliveredMaxVal: 1000000,

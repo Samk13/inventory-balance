@@ -1,29 +1,62 @@
-const inquirer = require("inquirer");
-const Product = require("../Models/Product.js");
-const store = require("../Store/index.js");
-const { objIterator } = require("../utils/index");
 const { actions, configValues } = require("../config.js");
+const { objIterator } = require("../utils/index");
+const Product = require("../Models/Product.js");
+const { stocks } = require("../Store/index.js");
+const inquirer = require("inquirer");
 
 const userActions = {
   type: "list",
   name: "mainMenu",
-  message: "What action you wanna take?\n\n",
   choices: objIterator(actions),
+  message: "What action you wanna take?\n\n",
 };
 
-function init() {
+const init = () => {
   inquirer
     .prompt(userActions)
     .then((answers) => {
       if (answers.mainMenu === actions.createNewProduct) {
-        // encounter1();
         createProduct();
-      } else {
-        console.log("\nYou cannot go that way. Try again");
-        main();
+      } else if (answers.mainMenu === actions.listProduct) {
+        listProducts();
+      } else if (answers.mainMenu === actions.sell) {
+        sellProduct();
       }
     })
     .catch((err) => console.log(err));
+};
+
+function sellProduct(product) {
+  inquirer.prompt({
+    message: "wish product you wanna sell?",
+    type: "list",
+    default: 1,
+  });
+}
+// TODO make function to check if there is product
+
+function listProducts() {
+  if (stocks.length === 0) {
+    inquirer
+      .prompt({
+        type: "confirm",
+        name: "toCreateNewStock",
+        message:
+          "seems like you have no stocks yet, would you like to create a new one now ?",
+        default: true,
+      })
+      .then((answers) => {
+        if (answers.toCreateNewStock === true) {
+          createProduct();
+        } else {
+          init();
+        }
+      });
+  } else {
+    console.log("\n List All products");
+    console.table(stocks);
+    init();
+  }
 }
 
 function createProduct() {
@@ -37,6 +70,7 @@ function createProduct() {
         message: "enter your product name",
         name: "name",
         validate: function (value) {
+          //  TODO accept space in the name and make better validation
           let pass = value.match(/^(?=.*[A-Za-z])[A-Za-z\d]{3,}$/i);
           if (pass) {
             return true;
@@ -127,11 +161,10 @@ function createProduct() {
       },
     ])
     .then((answers) => {
-      console.log(JSON.stringify(answers, null, "  "));
-      let collectedData = new Product.Product(answers);
-      store.stocks.push(collectedData.getProduct());
-      console.log("You can check your product buy selecting list");
-      console.table(store.stocks);
+      //   console.log(JSON.stringify(answers, null, "  "));
+
+      stocks.push(new Product.Product(answers).getProduct());
+      console.table(stocks);
       init();
     })
     .catch((err) => console.error(err));
