@@ -9,6 +9,7 @@ class Product {
     this._price = answers.price;
     this._delivered = 0;
     this._sold = 0;
+    this._total = 0;
   }
 
   getProduct() {
@@ -20,6 +21,7 @@ class Product {
       price: `${this._price} KR`,
       delivered: this._delivered,
       sold: this._sold,
+      total: this._total,
     };
   }
 

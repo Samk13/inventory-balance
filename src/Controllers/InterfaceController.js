@@ -1,5 +1,5 @@
 const { actions, configValues } = require("../config.js");
-const { objIterator } = require("../utils/index");
+const { objIterator, productIterator } = require("../utils/index");
 const Product = require("../Models/Product.js");
 const { stocks } = require("../Store/index.js");
 const inquirer = require("inquirer");
@@ -26,12 +26,58 @@ const init = () => {
     .catch((err) => console.log(err));
 };
 
-function sellProduct(product) {
-  inquirer.prompt({
-    message: "wish product you wanna sell?",
-    type: "list",
-    default: 1,
-  });
+function sellProduct() {
+  if (stocks.length === 0) {
+    inquirer
+      .prompt({
+        type: "confirm",
+        name: "toCreateNewStock",
+        message:
+          "seems like you have no stocks yet, would you like to create a new one now ?",
+        default: true,
+      })
+      .then((answers) => {
+        if (answers.toCreateNewStock === true) {
+          createProduct();
+        } else {
+          init();
+        }
+      })
+      .catch((err) => console.error(err));
+  } else {
+    inquirer
+      .prompt([
+        {
+          type: "list",
+          name: "sellProduct",
+          message: "Please select the product you wanna sell",
+          choices: productIterator(stocks),
+          filter: function (val) {
+            return val.toLowerCase();
+          },
+        },
+        {
+          type: "input",
+          name: "sellingAmount",
+          message: "enter the amount:",
+          validate: function (value) {
+            if (value > 0 && value < configValues.sellMaxVal) {
+              return true;
+            }
+            return "Please enter a valid phone number between 0 and 100000";
+          },
+        },
+      ])
+      .then((answers) => {
+        const selected = stocks.filter(
+          (res) => (res.name = answers.sellProduct)
+        )[0];
+        selected.sold = parseInt(answers.sellingAmount);
+        selected.total = selected.sold * parseInt(selected.price);
+        console.table(stocks);
+      })
+      .catch((err) => console.error(err));
+  }
 }
 // TODO make function to check if there is product
 
@@ -51,7 +97,8 @@ function listProducts() {
         } else {
           init();
         }
-      });
+      })
+      .catch((err) => console.error(err));
   } else {
     console.log("\n List All products");
     console.table(stocks);
@@ -161,8 +208,6 @@ function createProduct() {
       },
     ])
     .then((answers) => {
-      //   console.log(JSON.stringify(answers, null, "  "));
-
       stocks.push(new Product.Product(answers).getProduct());
       console.table(stocks);
       init();

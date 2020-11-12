@@ -15,7 +15,17 @@ function objIterator(val) {
   return Object.values(val);
 }
 
+function productIterator(arr) {
+  const result = [];
+  for (let i = 0; i < stocks.length; i++) {
+    result.push(arr[i].name.charAt(0).toUpperCase() + arr[i].name.slice(1));
+  }
+
+  return result;
+}
+
 module.exports = {
   GenerateId,
   objIterator,
+  productIterator,
 };

@@ -8,6 +8,7 @@ const actions = {
 const configValues = {
   priceMaxVal: 1000000,
   deliveredMaxVal: 1000000,
+  sellMaxVal: 100000,
   defaultProductCount: 10,
   defaultPrice: 10,
   defaultDeliveredNumber: 0,
