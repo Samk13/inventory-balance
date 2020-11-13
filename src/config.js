@@ -3,6 +3,7 @@ const actions = {
   listProduct: "List Product",
   sell: "Sell",
   deliver: "Deliver",
+  manual: "Manually enter your commands",
 };
 
 const configValues = {

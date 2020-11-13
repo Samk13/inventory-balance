@@ -43,29 +43,29 @@ npx stock-balance
 - [x] create a repo
 - [x] publish to npm
 - [x] Choose a library to use for user interaction
-- [] create Product class :
-  product = {
-  name: string,
-  category: [],
-  quantity: number,
-  price: number,
-  delivered: false,
-  belongToGroup:[],
-  }
-- [] separate Logic folder containing the logic that could be shared with a frontend framework and the CLI interface
+- [x] create Product class :
+      product = {
+      name: string,
+      category: [],
+      quantity: number,
+      price: number,
+      delivered: false,
+      belongToGroup:[],
+      }
+- [x] separate Logic folder containing the logic that could be shared with a frontend framework and the CLI interface
 
-- [] CLI will ask questions
+- [x] CLI will ask questions
 
-  - [] when You enter the programme will show a welcome screen with commands available then
-  - [] question there is no products in your store yet, would you like to add one now ? Y/N
-    [] if No show the commands available.
-    [] Yes -> start the create new product obj process
-    [] what is your product name ? -> string
-    [] what is the count ? -> number
-    [] what category example "cloth" "electric" ? -> string
-    [] what is the price of this product in SEK? -> float
+  - [x] when You enter the programme will show a welcome screen with commands available then
+  - [x] question there is no products in your store yet, would you like to add one now ? Y/N
+        [x] if No show the commands available.
+        [x] Yes -> start the create new product obj process
+        [x] what is your product name ? -> string
+        [x] what is the count ? -> number
+        [x] what category example "cloth" "electric" ? -> string
+        [x] what is the price of this product in SEK? -> float
 
-- [] Add item prices and show total amounts at sale.
+- [x] Add item prices and show total amounts at sale.
 - [] Add discounts, e.g. buy three and get one for free.
 - [] create function to check how many product you sell and how many is delivered so it update the count AFTER the deliver is made while keeping the count reserved for future sells not be allowed
 
