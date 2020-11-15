@@ -1,3 +1,5 @@
+const chalk = require("chalk");
+
 function GenerateId() {
   let dt = new Date();
   let seed =
@@ -24,8 +26,25 @@ function productIterator(arr) {
   return result;
 }
 
+function logGreen(log) {
+  return console.log(chalk.green(log));
+}
+function logBlue(log) {
+  return console.log(chalk.blue(log));
+}
+function logYellow(log) {
+  return console.log(chalk.yellow(log));
+}
+function logRed(log) {
+  return console.log(chalk.bold.red(log));
+}
+
 module.exports = {
   GenerateId,
+  logGreen,
+  logYellow,
+  logRed,
+  logBlue,
   objIterator,
   productIterator,
 };

@@ -4,7 +4,7 @@ const { init } = require("./Controllers/UIController.js");
 
 function main() {
   welcome();
-  init2();
+  init();
 }
 
 main();

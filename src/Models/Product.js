@@ -2,43 +2,47 @@
 const utils = require("../utils/index.js");
 class Product {
   constructor(answers) {
-    this._id = utils.GenerateId();
-    this._name = answers.name;
-    this._category = answers.category;
-    this._quantity = answers.quantity;
-    this._price = answers.price;
-    this._delivered = 0;
-    this._sold = 0;
-    this._total = 0;
+    this.id = utils.GenerateId();
+    this.name = answers.name;
+    this.category = answers.category;
+    this.quantity = answers.quantity;
+    this.price = answers.price;
+    this.delivered = 0;
+    this.sold = 0;
+    this.total = 0;
   }
 
   getProduct() {
     return {
-      id: this._id,
-      name: this._name,
-      category: this._category,
-      quantity: parseInt(this._quantity),
-      price: `${this._price} KR`,
-      delivered: this._delivered,
-      sold: this._sold,
-      total: this._total,
+      id: this.id,
+      name: this.name,
+      category: this.category,
+      quantity: parseInt(this.quantity),
+      price: `${this.price} KR`,
+      delivered: this.delivered,
+      sold: this.sold,
+      total: this.total,
     };
   }
 
   getDelivered() {
-    return this._delivered;
+    return this.delivered;
+  }
+
+  getProductId() {
+    return this.id;
   }
 
   setDelivered(value) {
-    this._delivered = value;
+    this.delivered = value;
   }
 
   getCategory() {
-    return this._category;
+    return this.category;
   }
 
   getSold() {
-    return this._sold;
+    return this.sold;
   }
 
   setSold(value) {

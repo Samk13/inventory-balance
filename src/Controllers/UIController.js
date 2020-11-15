@@ -1,5 +1,12 @@
 const { actions, configValues, availableCommands } = require("../config.js");
-const { objIterator, productIterator } = require("../utils/index.js");
+const {
+  objIterator,
+  productIterator,
+  logBlue,
+  logRed,
+  logYellow,
+  logGreen,
+} = require("../utils/index.js");
 const Product = require("../Models/Product.js");
 const { stocks } = require("../Store/index.js");
 const inquirer = require("inquirer");
@@ -17,32 +24,32 @@ const init = () => {
     const input = answers.mainMenu.trim().split(/([0-9]+)/);
 
     if (commands.includes(input[0])) {
-      console.log("we got you now", input[0]);
+      logGreen("we got you now", input[0]);
       switch (input[0]) {
         case "c":
           createProduct();
           break;
         case "L":
-          console.log("List all products");
+          logGreen("List all products");
           listProducts();
           break;
         case "l":
-          console.log("deliver product");
+          logGreen("deliver product");
           break;
         case "S":
-          console.log("sell selected product");
+          logGreen("sell selected product");
           sellProduct(input);
           break;
         case "lAuto":
-          console.log("automatic delivery for sold items");
+          logGreen("automatic delivery for sold items");
         default:
-          console.log("default case!");
+          logGreen("default case!");
           break;
       }
     } else {
-      console.log("wrong command!\nHere is all available commands:");
-      console.log(commands);
-
+      logRed("wrong command!\nHere is all available commands:\n");
+      // logGreen(commands);
+      console.table(commands);
       return init();
     }
   });
@@ -50,8 +57,9 @@ const init = () => {
 
 // ----------------------------------------------Sell product
 function sellProdLogic(val, product) {
-  const selected = stocks.filter((res) => (res.name = product))[0];
+  const selected = stocks.filter((res) => res.name === product)[0];
   selected.sold += parseInt(val);
+  selected.quantity -= parseInt(val);
   selected.total = parseInt(selected.price) * parseInt(selected.sold);
   return console.table(stocks);
 }
@@ -60,7 +68,10 @@ async function sellProduct(userInput) {
   try {
     const selectedProduct = await selectProduct();
     const sellAmount = await validateUserInput(userInput);
-    sellProdLogic(sellAmount, selectedProduct);
+    const selected = stocks.filter((res) => res.name === selectedProduct)[0];
+    selected.quantity < sellAmount
+      ? logRed("sell amount cannot exceed quantity!")
+      : sellProdLogic(sellAmount, selectedProduct);
 
     return init();
   } catch (error) {
@@ -78,7 +89,7 @@ async function validateUserInput(input) {
       prompt({
         type: "input",
         name: "amount",
-        message: "please enter the amount you want to sell",
+        message: "please enter the amount you want",
         validate: function (value) {
           var valid = !isNaN(parseInt(value));
           return valid || "Please enter a number";
@@ -88,7 +99,7 @@ async function validateUserInput(input) {
           value = answers.amount;
           resolve(value);
         })
-        .catch((err) => console.error(err));
+        .catch((err) => logRed(err.message));
     } else {
       resolve(value);
     }
@@ -111,7 +122,7 @@ async function selectProduct() {
         .then((answers) => {
           resolve(answers.selectedProduct);
         })
-        .catch((err) => console.error(err));
+        .catch((err) => logRed(err));
     }
     return;
   });
@@ -123,18 +134,21 @@ function stocksHasProducts() {
     prompt({
       type: "confirm",
       name: "CreateNewStock",
-      message:
-        "\x1b[33m Seems like you have no stocks yet, would you like to create a new one now ?",
+      message: logYellow("\nSeems like you have no stocks yet!\n"),
       default: true,
     })
       .then((answers) => {
         if (answers.CreateNewStock === true) {
           return createProduct();
         } else {
+          logRed(
+            "\nto perform this command,You need at least one product in the store "
+          );
+          logYellow("you can enter 'c' to create new product\n");
           return init();
         }
       })
-      .catch((err) => console.error(err));
+      .catch((err) => logRed(err));
   } else {
     return true;
   }
@@ -143,8 +157,8 @@ function stocksHasProducts() {
 // ----------------------------------------------List product
 
 function listProducts() {
-  console.log("\nList all Product");
-  console.log("__________________");
+  logGreen("\nList all Product");
+  logGreen("__________________");
   if (stocksHasProducts()) {
     console.table(stocks);
     init();
@@ -155,8 +169,8 @@ function listProducts() {
 
 async function createProduct() {
   return new Promise((resolve, reject) => {
-    console.log("\nCreate new Product");
-    console.log("__________________");
+    logGreen("\nCreate new Product");
+    logGreen("__________________\n");
     prompt = inquirer.createPromptModule();
     prompt([
       {
@@ -260,22 +274,19 @@ async function createProduct() {
         resolve(console.table(stocks));
         init();
       })
-      .catch((err) => console.error(err));
+      .catch((err) => logRed(err));
   });
 }
 
 function welcome() {
-  console.log(
-    "\x1b[33m%s\x1b[0m",
-    "\n\n\n*************************************"
-  );
-  console.log("\033[94m", "\n** >> WELCOME TO STOCK BALANCER << **");
-  console.log("\x1b[33m%s\x1b[0m", "** >> Created by Sam Arbid 2020 << **");
-  console.log("\033[94m", "\n*************************************\n\n\n");
+  logYellow("\n\n\n*************************************");
+  logBlue("\n** >> WELCOME TO STOCK BALANCER << **");
+  logYellow("** >> Created by Sam Arbid 2020 << **");
+  logBlue("\n*************************************\n\n\n");
 }
 
 module.exports = {
-  init,
   createProduct,
   welcome,
+  init,
 };

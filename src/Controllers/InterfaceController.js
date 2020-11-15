@@ -180,7 +180,7 @@ function sellProduct() {
     ])
     .then((answers) => {
       const selected = stocks.filter(
-        (res) => (res.name = answers.sellProduct)
+        (res) => res.name === answers.sellProduct
       )[0];
       selected.sold += parseInt(answers.sellingAmount);
       selected.total = selected.sold * parseInt(selected.price);
