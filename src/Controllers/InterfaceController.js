@@ -300,7 +300,7 @@ function createProduct() {
       },
     ])
     .then((answers) => {
-      stocks.push(new Product.Product(answers).getProduct());
+      stocks.push(new Product.Product(answers));
       console.table(stocks);
       init2();
     })

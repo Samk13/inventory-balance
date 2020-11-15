@@ -24,30 +24,27 @@ const init = () => {
     const input = answers.mainMenu.trim().split(/([0-9]+)/);
 
     if (commands.includes(input[0])) {
-      logGreen("we got you now", input[0]);
       switch (input[0]) {
         case "c":
           createProduct();
           break;
         case "L":
-          logGreen("List all products");
           listProducts();
           break;
         case "l":
-          logGreen("deliver product");
+          deliverProduct(input);
           break;
         case "S":
-          logGreen("sell selected product");
           sellProduct(input);
           break;
         case "lAuto":
-          logGreen("automatic delivery for sold items");
+          logGreen("Automatic delivery for sold items");
         default:
           logGreen("default case!");
           break;
       }
     } else {
-      logRed("wrong command!\nHere is all available commands:\n");
+      logRed("Wrong command!\nHere is all available commands:\n");
       // logGreen(commands);
       console.table(commands);
       return init();
@@ -55,13 +52,39 @@ const init = () => {
   });
 };
 
+const selectProdLogic = (product) => {
+  return stocks.filter((res) => res.name === product)[0];
+};
+
+// ----------------------------------------------deliver product
+function deliverProdLogic(val, product) {
+  selectProdLogic(product).delivered += parseInt(val);
+  return listProductsLogic();
+}
+
+async function deliverProduct(userInput) {
+  try {
+    const selectedProd = await selectProduct();
+    const deliveryAmount = await validateUserInput(userInput);
+    const selected = stocks.filter((res) => res.name === selectedProd)[0];
+    selected.quantity < deliveryAmount
+      ? logRed("Deliver amount cannot exceed quantity!")
+      : deliverProdLogic(deliveryAmount, selectedProd);
+
+    return init();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 // ----------------------------------------------Sell product
 function sellProdLogic(val, product) {
-  const selected = stocks.filter((res) => res.name === product)[0];
-  selected.sold += parseInt(val);
-  selected.quantity -= parseInt(val);
-  selected.total = parseInt(selected.price) * parseInt(selected.sold);
-  return console.table(stocks);
+  const selectedProd = selectProdLogic(product);
+  selectedProd.sold += parseInt(val);
+  selectedProd.quantity -= parseInt(val);
+  selectedProd.total =
+    parseInt(selectedProd.price) * parseInt(selectedProd.sold);
+  return listProductsLogic();
 }
 
 async function sellProduct(userInput) {
@@ -70,7 +93,7 @@ async function sellProduct(userInput) {
     const sellAmount = await validateUserInput(userInput);
     const selected = stocks.filter((res) => res.name === selectedProduct)[0];
     selected.quantity < sellAmount
-      ? logRed("sell amount cannot exceed quantity!")
+      ? logRed("Sell amount cannot exceed quantity!")
       : sellProdLogic(sellAmount, selectedProduct);
 
     return init();
@@ -89,7 +112,7 @@ async function validateUserInput(input) {
       prompt({
         type: "input",
         name: "amount",
-        message: "please enter the amount you want",
+        message: "Please enter the amount you want",
         validate: function (value) {
           var valid = !isNaN(parseInt(value));
           return valid || "Please enter a number";
@@ -142,9 +165,9 @@ function stocksHasProducts() {
           return createProduct();
         } else {
           logRed(
-            "\nto perform this command,You need at least one product in the store "
+            "\nTo perform this command,You need at least one product in the store "
           );
-          logYellow("you can enter 'c' to create new product\n");
+          logYellow("You can enter 'c' to create new product\n");
           return init();
         }
       })
@@ -156,13 +179,28 @@ function stocksHasProducts() {
 
 // ----------------------------------------------List product
 
-function listProducts() {
-  logGreen("\nList all Product");
-  logGreen("__________________");
-  if (stocksHasProducts()) {
-    console.table(stocks);
-    init();
-  }
+async function listProductsLogic() {
+  return new Promise((resolve) => {
+    logGreen("\nList all Product");
+    logGreen("__________________\n");
+    if (stocksHasProducts()) {
+      results = JSON.parse(JSON.stringify(stocks));
+      results.forEach((prod) => {
+        prod.delivered = `${prod.delivered} X`;
+        prod.quantity = `${prod.quantity} X`;
+        prod.price = `${prod.price} KR`;
+        prod.total = `${prod.total} KR`;
+        prod.sold = `${prod.sold} X`;
+      });
+      resolve(console.table(results));
+      // resolve(console.table(stocks));
+    }
+  });
+}
+
+async function listProducts() {
+  await listProductsLogic();
+  init();
 }
 
 // ----------------------------------------------Create product
@@ -175,7 +213,7 @@ async function createProduct() {
     prompt([
       {
         type: "input",
-        message: "enter your product name",
+        message: "Please enter your product name",
         name: "name",
         validate: function (value) {
           //  TODO accept space in the name and make better validation
@@ -189,7 +227,7 @@ async function createProduct() {
       },
       {
         type: "input",
-        message: "enter product category",
+        message: "Enter product category",
         name: "category",
         validate: function (value) {
           let pass = value.match(/^(?=.*[A-Za-z])[A-Za-z\d]{3,}$/i);
@@ -235,7 +273,7 @@ async function createProduct() {
       {
         type: "input",
         message: "How many have been sold?",
-        name: "sold ",
+        name: "sold",
         validate: function (value) {
           if (
             typeof value !== NaN &&
@@ -253,7 +291,7 @@ async function createProduct() {
       {
         type: "input",
         message: "How many have been delivered?",
-        name: "delivered ",
+        name: "delivered",
         validate: function (value) {
           if (
             typeof value !== NaN &&
@@ -270,8 +308,8 @@ async function createProduct() {
       },
     ])
       .then((answers) => {
-        stocks.push(new Product.Product(answers).getProduct());
-        resolve(console.table(stocks));
+        stocks.push(new Product.Product(answers));
+        resolve(listProductsLogic());
         init();
       })
       .catch((err) => logRed(err));

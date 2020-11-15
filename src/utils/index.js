@@ -26,18 +26,10 @@ function productIterator(arr) {
   return result;
 }
 
-function logGreen(log) {
-  return console.log(chalk.green(log));
-}
-function logBlue(log) {
-  return console.log(chalk.blue(log));
-}
-function logYellow(log) {
-  return console.log(chalk.yellow(log));
-}
-function logRed(log) {
-  return console.log(chalk.bold.red(log));
-}
+const logGreen = (log) => console.log(chalk.green(log));
+const logBlue = (log) => console.log(chalk.blue(log));
+const logYellow = (log) => console.log(chalk.yellow(log));
+const logRed = (log) => console.log(chalk.bold.red(log));
 
 module.exports = {
   GenerateId,

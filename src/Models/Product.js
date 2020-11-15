@@ -5,50 +5,25 @@ class Product {
     this.id = utils.GenerateId();
     this.name = answers.name;
     this.category = answers.category;
-    this.quantity = answers.quantity;
-    this.price = answers.price;
-    this.delivered = 0;
-    this.sold = 0;
-    this.total = 0;
+    this.quantity = parseInt(answers.quantity);
+    this.price = parseFloat(answers.price);
+    this.delivered = parseInt(answers.delivered) || 0;
+    this.sold = parseInt(answers.sold) || 0;
+    this.total = parseInt(answers.price) * parseInt(answers.sold) || 0;
   }
 
-  getProduct() {
-    return {
-      id: this.id,
-      name: this.name,
-      category: this.category,
-      quantity: parseInt(this.quantity),
-      price: `${this.price} KR`,
-      delivered: this.delivered,
-      sold: this.sold,
-      total: this.total,
-    };
-  }
-
-  getDelivered() {
-    return this.delivered;
-  }
-
-  getProductId() {
-    return this.id;
-  }
-
-  setDelivered(value) {
-    this.delivered = value;
-  }
-
-  getCategory() {
-    return this.category;
-  }
-
-  getSold() {
-    return this.sold;
-  }
-
-  setSold(value) {
-    this.sold = value;
-    console.log(`${value} has been sold successfully`);
-  }
+  // getProduct() {
+  //   return {
+  //     id: this.id,
+  //     name: this.name,
+  //     category: this.category,
+  //     quantity: parseInt(this.quantity),
+  //     sold: parseInt(this.sold),
+  //     price: parseInt(this.price),
+  //     delivered: parseInt(this.delivered),
+  //     total: parseInt(this.total),
+  //   };
+  // }
 }
 
 module.exports = {
