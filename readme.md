@@ -67,7 +67,6 @@ npx stock-balance
 
 - [x] Add item prices and show total amounts at sale.
 - [] Add discounts, e.g. buy three and get one for free.
-- [] create function to check how many product you sell and how many is delivered so it update the count AFTER the deliver is made while keeping the count reserved for future sells not be allowed
 
 - [] ask user to choose between automatic delivery on 10 or 5 items or manually deliver
 

@@ -57,10 +57,10 @@ const selectProdLogic = (product) => {
 };
 
 // ----------------------------------------------deliver product
-function deliverProdLogic(val, product) {
+const deliverProdLogic = (val, product) => {
   selectProdLogic(product).delivered += parseInt(val);
   return listProductsLogic();
-}
+};
 
 async function deliverProduct(userInput) {
   try {
@@ -78,14 +78,14 @@ async function deliverProduct(userInput) {
 }
 
 // ----------------------------------------------Sell product
-function sellProdLogic(val, product) {
+const sellProdLogic = (val, product) => {
   const selectedProd = selectProdLogic(product);
   selectedProd.sold += parseInt(val);
   selectedProd.quantity -= parseInt(val);
   selectedProd.total =
     parseInt(selectedProd.price) * parseInt(selectedProd.sold);
   return listProductsLogic();
-}
+};
 
 async function sellProduct(userInput) {
   try {
@@ -151,7 +151,7 @@ async function selectProduct() {
   });
 }
 
-function stocksHasProducts() {
+const stocksHasProducts = () => {
   if (stocks.length === 0) {
     prompt = inquirer.createPromptModule();
     prompt({
@@ -175,7 +175,7 @@ function stocksHasProducts() {
   } else {
     return true;
   }
-}
+};
 
 // ----------------------------------------------List product
 
@@ -316,12 +316,12 @@ async function createProduct() {
   });
 }
 
-function welcome() {
+const welcome = () => {
   logYellow("\n\n\n*************************************");
   logBlue("\n** >> WELCOME TO STOCK BALANCER << **");
   logYellow("** >> Created by Sam Arbid 2020 << **");
   logBlue("\n*************************************\n\n\n");
-}
+};
 
 module.exports = {
   createProduct,
