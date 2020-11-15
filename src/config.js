@@ -6,6 +6,15 @@ const actions = {
   manual: "Manually enter your commands",
 };
 
+const availableCommands = {
+  createNewProduct: "c",
+  listProduct: "L",
+  sell: "S",
+  deliver: "l",
+  deliverAuto: "lAuto",
+  sellPackage: "SP",
+};
+
 const configValues = {
   priceMaxVal: 1000000,
   deliveredMaxVal: 1000000,
@@ -18,4 +27,5 @@ const configValues = {
 module.exports = {
   actions,
   configValues,
+  availableCommands,
 };

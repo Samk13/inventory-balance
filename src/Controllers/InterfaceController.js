@@ -4,7 +4,9 @@ const Product = require("../Models/Product.js");
 const { stocks } = require("../Store/index.js");
 const inquirer = require("inquirer");
 
-const init = () => {
+const { createNewProduct, listProduct, sell, deliver, manual } = actions;
+
+const init2 = () => {
   inquirer
     .prompt({
       type: "list",
@@ -13,37 +15,85 @@ const init = () => {
       message: "What action you wanna take?\n\n",
     })
     .then((answers) => {
-      if (answers.mainMenu === actions.createNewProduct) {
+      if (answers.mainMenu === createNewProduct) {
         createProduct();
-      } else if (answers.mainMenu === actions.listProduct) {
+      } else if (answers.mainMenu === listProduct) {
         listProducts();
-      } else if (answers.mainMenu === actions.sell) {
+      } else if (answers.mainMenu === sell) {
+        // selectProduct();
         sellProduct();
-      } else if (answers.mainMenu === actions.deliver) {
+      } else if (answers.mainMenu === deliver) {
+        // productAmount();
         deliverProduct();
-      } else if (answers.mainMenu === actions.manual) {
-        manualCommands();
       }
     })
     .catch((err) => console.log(err));
 };
 
-function manualCommands() {
-  inquirer
-    .prompt([
-      {
-        type: "input",
-        name: "manual",
-        message: "please enter your command Example 'l5 , L':",
+let res = { product: "", amount: null };
+
+function selectProduct() {
+  if (stocksHasProducts()) {
+    prompt = inquirer.createPromptModule();
+    prompt({
+      type: "list",
+      name: "selectedProduct",
+      message: "Please select the product",
+      choices: productIterator(stocks),
+      filter: function (val) {
+        return val.toLowerCase();
       },
-    ])
-    .then((answers) => {
-      console.log(answers.manual);
-      // TODO  split the input into strings and number
-      // TODO validate
-      // TODO switch to the already created functionality
-    });
+    })
+      .then((answers) => {
+        // if (actionType.toLowerCase() === deliver) {
+        //   return deliverProduct(answers.selectedProduct);
+        // } else if (actionType.toLowerCase() === sell) {
+        //   return selectProduct(answers.selectProduct);
+        // }
+        return productAmount(answers.selectedProduct);
+      })
+      .catch((err) => console.error(err));
+  }
+  return;
 }
+
+function productAmount(prod) {
+  prompt = inquirer.createPromptModule();
+  prompt({
+    type: "input",
+    name: "sellingAmount",
+    message: "enter the amount:",
+    validate: function (value) {
+      var valid = !isNaN(parseFloat(value));
+      return valid || "Please enter a valid number between 0 and 100000";
+    },
+    filter: Number,
+  })
+    .then((answers) => {
+      res.amount = parseInt(answers.sellingAmount);
+      res.product = prod;
+      console.log(res);
+      return;
+    })
+    .catch((err) => console.error(err));
+}
+
+// function manualCommands() {
+//   inquirer
+//     .prompt([
+//       {
+//         type: "input",
+//         name: "manual",
+//         message: "please enter your command Example 'l5 , L':",
+//       },
+//     ])
+//     .then((answers) => {
+//       console.log(answers.manual);
+//       // TODO  split the input into strings and number
+//       // TODO validate
+//       // TODO switch to the already created functionality
+//     });
+// }
 
 function stocksHasProducts() {
   if (stocks.length === 0) {
@@ -57,9 +107,9 @@ function stocksHasProducts() {
       })
       .then((answers) => {
         if (answers.CreateNewStock === true) {
-          createProduct();
+          return createProduct();
         } else {
-          init();
+          return init2();
         }
       })
       .catch((err) => console.error(err));
@@ -68,37 +118,24 @@ function stocksHasProducts() {
   }
 }
 
-function deliverProduct() {
+function deliverProduct(theProduct) {
   if (stocksHasProducts()) {
     inquirer
-      .prompt([
-        {
-          type: "list",
-          name: "deliveredProduct",
-          message: "Please select the product you want to deliver",
-          choices: productIterator(stocks),
-          filter: function (val) {
-            return val.toLowerCase();
-          },
+      .prompt({
+        type: "input",
+        name: "AmountDelivered",
+        message:
+          "Enter the amount you want to deliver between 1 and sold amount!",
+        validate: function (value) {
+          if (value > 0) {
+            return true;
+          } else {
+            console.log(
+              "\n \x1b[31m Please enter a valid number between 1 and sold amount!\n"
+            );
+          }
         },
-        {
-          type: "input",
-          name: "AmountDelivered",
-          message:
-            "Enter the amount you want to deliver between 1 and sold amount!",
-          validate: function (value) {
-            if (value > 0) {
-              return true;
-            } else {
-              console.log(
-                "\n \x1b[31m Please enter a valid number between 1 and sold amount!\n"
-              );
-              init();
-              return;
-            }
-          },
-        },
-      ])
+      })
       .then((answers) => {
         const selected = stocks.filter(
           (res) => (res.name = answers.deliveredProduct)
@@ -111,12 +148,15 @@ function deliverProduct() {
           console.log(
             "\x1b[31m The delivered amount is exceeding the sold amount run the process again."
           );
+          console.log(
+            "\n \x1b[31m and make sure you sold your product before you deliver it!\n"
+          );
           console.table(stocks);
-          init();
+          return init2();
         } else {
           selected.delivered += parseInt(answers.AmountDelivered);
           console.table(stocks);
-          init();
+          return init2();
         }
       })
       .catch((err) => console.error(err));
@@ -124,50 +164,38 @@ function deliverProduct() {
 }
 
 function sellProduct() {
-  if (stocksHasProducts()) {
-    inquirer
-      .prompt([
-        {
-          type: "list",
-          name: "sellProduct",
-          message: "Please select the product you wanna sell",
-          choices: productIterator(stocks),
-          filter: function (val) {
-            return val.toLowerCase();
-          },
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "sellingAmount",
+        message: "enter the amount:",
+        validate: function (value) {
+          if (value > 0 && value < configValues.sellMaxVal) {
+            return true;
+          }
+          return "Please enter a valid number between 0 and 100000";
         },
-        {
-          type: "input",
-          name: "sellingAmount",
-          message: "enter the amount:",
-          validate: function (value) {
-            if (value > 0 && value < configValues.sellMaxVal) {
-              return true;
-            }
-            return "Please enter a valid number between 0 and 100000";
-          },
-        },
-      ])
-      .then((answers) => {
-        const selected = stocks.filter(
-          (res) => (res.name = answers.sellProduct)
-        )[0];
-        selected.sold += parseInt(answers.sellingAmount);
-        selected.total = selected.sold * parseInt(selected.price);
-        console.table(stocks);
-        return init();
-      })
-      .catch((err) => console.error(err));
-  }
+      },
+    ])
+    .then((answers) => {
+      const selected = stocks.filter(
+        (res) => (res.name = answers.sellProduct)
+      )[0];
+      selected.sold += parseInt(answers.sellingAmount);
+      selected.total = selected.sold * parseInt(selected.price);
+      console.table(stocks);
+      return init2();
+    })
+    .catch((err) => console.error(err));
 }
-// TODO make function to check if there is product
 
 function listProducts() {
   console.log("\nList all Product");
   console.log("__________________");
   if (stocksHasProducts()) {
     console.table(stocks);
-    init();
+    init2();
   }
 }
 
@@ -274,7 +302,7 @@ function createProduct() {
     .then((answers) => {
       stocks.push(new Product.Product(answers).getProduct());
       console.table(stocks);
-      init();
+      init2();
     })
     .catch((err) => console.error(err));
 }
@@ -291,7 +319,7 @@ function welcome() {
 }
 
 module.exports = {
-  init,
+  init2,
   createProduct,
   welcome,
 };
