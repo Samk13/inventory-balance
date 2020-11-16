@@ -4,7 +4,7 @@
   "description": "console application to manage inventory balances",
   "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "start": "node src/index.js"
   },
   "author": "Sam Arbid",
