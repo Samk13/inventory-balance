@@ -43,15 +43,7 @@ npx stock-balance
 - [x] create a repo
 - [x] publish to npm
 - [x] Choose a library to use for user interaction
-- [x] create Product class :
-      product = {
-      name: string,
-      category: [],
-      quantity: number,
-      price: number,
-      delivered: false,
-      belongToGroup:[],
-      }
+- [x] create Product class
 - [x] separate Logic folder containing the logic that could be shared with a frontend framework and the CLI interface
 
 - [x] CLI will ask questions
@@ -66,12 +58,13 @@ npx stock-balance
         [x] what is the price of this product in SEK? -> float
 
 - [x] Add item prices and show total amounts at sale.
+- [x] Create unit tests for computational logic.
 - [] Add discounts, e.g. buy three and get one for free.
 
-- [] ask user to choose between automatic delivery on 10 or 5 items or manually deliver
-
-  - [] wish algorithm you want to use for this task?
-    [] Automatic delivery if the order count is 5 or 10
-    [] manually deliver orders
-
-- [] Create unit tests for computational logic.
+- [] Write an alternative algorithm that makes automatic delivery of the double number at sale. That is, if you sell 5, 10 are automatically delivered.
+- [] Implement a mechanism to switch between the algorithm in the previous point and the original version.
+- [x] Add more than one product and handle product numbers at sales and delivery.
+- [] Add the option to sell item packages that are predefined in the code, eg "SP1" means "sell 1 of package 1" where package 1 can contain one or more products (and then all must be counted down in stock at sale).
+- [x] Add item prices and show total amounts at sale.
+- [x] Add discounts, e.g. buy three and get one for free.
+- [-] Create unit tests for computational logic.

@@ -35,7 +35,7 @@ const init = () => {
           deliverProduct(input);
           break;
         case "S":
-          sellProduct(input);
+          sellProd(input);
           break;
         case "lAuto":
           logGreen("Automatic delivery for sold items");
@@ -45,20 +45,16 @@ const init = () => {
       }
     } else {
       logRed("Wrong command!\nHere is all available commands:\n");
-      // logGreen(commands);
-      console.table(commands);
+
+      console.log(availableCommands);
       return init();
     }
   });
 };
 
-const selectProdLogic = (product) => {
-  return stocks.filter((res) => res.name === product)[0];
-};
-
 // ----------------------------------------------deliver product
 const deliverProdLogic = (val, product) => {
-  selectProdLogic(product).delivered += parseInt(val);
+  selectProdLogic(product, stocks).delivered += parseInt(val);
   return listProductsLogic();
 };
 
@@ -78,24 +74,55 @@ async function deliverProduct(userInput) {
 }
 
 // ----------------------------------------------Sell product
-const sellProdLogic = (val, product) => {
-  const selectedProd = selectProdLogic(product);
-  selectedProd.sold += parseInt(val);
-  selectedProd.quantity -= parseInt(val);
-  selectedProd.total =
-    parseInt(selectedProd.price) * parseInt(selectedProd.sold);
+const sellProdLogic = (val, product, delivery) => {
+  const prod = selectProdLogic(product, stocks);
+  prod.sold += parseInt(val);
+  prod.quantity -= parseInt(val);
+  prod.total = parseInt(prod.price) * parseInt(prod.sold);
+  if (delivery && configValues.autoDeliverValues.includes(parseInt(val))) {
+    prod.delivered += parseInt(val);
+  }
   return listProductsLogic();
 };
 
-async function sellProduct(userInput) {
+function sellDeliveryQuestion() {
+  return new Promise((resolve) => {
+    prompt = inquirer.createPromptModule();
+    prompt({
+      type: "list",
+      name: "selectLogic",
+      message: "Please select selling method",
+      choices: [
+        "Sell without delivery",
+        "Sell with delivery for only 5 and 10 orders",
+      ],
+      filter: function (val) {
+        return val;
+      },
+    })
+      .then((answers) => {
+        switch (answers.selectLogic) {
+          case "Sell without delivery":
+            resolve(false);
+            break;
+          case "Sell with delivery for only 5 and 10 orders":
+            resolve(true);
+            break;
+        }
+      })
+      .catch((err) => logRed(err));
+  });
+}
+
+async function sellProd(userInput) {
   try {
+    const deliverQuestion = await sellDeliveryQuestion();
     const selectedProduct = await selectProduct();
     const sellAmount = await validateUserInput(userInput);
     const selected = stocks.filter((res) => res.name === selectedProduct)[0];
     selected.quantity < sellAmount
       ? logRed("Sell amount cannot exceed quantity!")
-      : sellProdLogic(sellAmount, selectedProduct);
-
+      : sellProdLogic(sellAmount, selectedProduct, deliverQuestion);
     return init();
   } catch (error) {
     console.error(error);
@@ -103,6 +130,9 @@ async function sellProduct(userInput) {
 }
 
 // ----------------------------------------------Utils
+const selectProdLogic = (product, stocks) => {
+  return stocks.filter((res) => res.name === product)[0];
+};
 
 async function validateUserInput(input) {
   return new Promise((resolve) => {
