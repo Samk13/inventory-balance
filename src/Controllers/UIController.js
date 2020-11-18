@@ -6,7 +6,7 @@ const {
   logRed,
   logYellow,
   logGreen,
-} = require("../utils/index.js").default;
+} = require("../utils/index.js");
 const Product = require("../Models/Product.js");
 const { stocks } = require("../Store/index.js");
 const inquirer = require("inquirer");
