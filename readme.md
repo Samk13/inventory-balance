@@ -32,10 +32,18 @@ Addition
 
 - Create unit tests for calculation logic.
 
-# install
+# install && run
 
 ```zsh
-npx stock-balance
+
+git clone https://github.com/Samk13/inventory-balance.git
+
+cd inventory-balance
+
+npm install
+npm run build
+node dist/index.js
+
 ```
 
 ## TODO

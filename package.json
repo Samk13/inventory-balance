@@ -1,18 +1,27 @@
 {
   "name": "stock-balance",
-  "version": "1.0.0",
+  "version": "1.0.7",
   "description": "console application to manage inventory balances",
   "main": "src/index.js",
+  "bin": {
+    "stock-balance": "node src/index.js"
+  },
   "scripts": {
-    "test": "jest",
-    "start": "node src/index.js"
+    "build": "npx babel src --out-dir dist",
+    "start": "npx babel src --watch --out-dir dist",
+    "test": "jest"
   },
   "author": "Sam Arbid",
   "license": "MIT",
   "dependencies": {
+    "@babel/plugin-transform-runtime": "^7.12.1",
+    "chalk": "^4.1.0",
     "inquirer": "^7.3.3"
   },
   "devDependencies": {
+    "@babel/cli": "^7.12.1",
+    "@babel/core": "^7.12.3",
+    "@babel/preset-env": "^7.12.1",
     "jest": "^26.6.3"
   }
 }

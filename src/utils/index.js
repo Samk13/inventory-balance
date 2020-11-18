@@ -1,5 +1,5 @@
 const chalk = require("chalk");
-
+const { stocks } = require("../Store/index.js");
 function GenerateId() {
   let dt = new Date();
   let seed =
@@ -18,7 +18,7 @@ function objIterator(val) {
 }
 
 function productIterator(arr) {
-  const result = [];
+  let result = [];
   for (let i = 0; i < stocks.length; i++) {
     result.push(arr[i].name.charAt(0).toUpperCase() + arr[i].name.slice(1));
   }

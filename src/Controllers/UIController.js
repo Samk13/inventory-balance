@@ -12,44 +12,46 @@ const { stocks } = require("../Store/index.js");
 const inquirer = require("inquirer");
 
 const init = () => {
-  prompt = inquirer.createPromptModule();
+  const prompt = inquirer.createPromptModule();
   prompt({
     type: "input",
     name: "mainMenu",
     choices: objIterator(actions),
     message: "What action you wanna take?\n\n",
-  }).then((answers) => {
-    const commands = objIterator(availableCommands);
-    // validate and split the input into string and number
-    const input = answers.mainMenu.trim().split(/([0-9]+)/);
+  })
+    .then((answers) => {
+      const commands = objIterator(availableCommands);
+      // validate and split the input into string and number
+      const input = answers.mainMenu.trim().split(/([0-9]+)/);
 
-    if (commands.includes(input[0])) {
-      switch (input[0]) {
-        case "c":
-          createProduct();
-          break;
-        case "L":
-          listProducts();
-          break;
-        case "l":
-          deliverProduct(input);
-          break;
-        case "S":
-          sellProd(input);
-          break;
-        case "lAuto":
-          logGreen("Automatic delivery for sold items");
-        default:
-          logGreen("default case!");
-          break;
+      if (commands.includes(input[0])) {
+        switch (input[0]) {
+          case "c":
+            createProduct();
+            break;
+          case "L":
+            listProducts();
+            break;
+          case "l":
+            deliverProduct(input);
+            break;
+          case "S":
+            sellProd(input);
+            break;
+          case "lAuto":
+            logGreen("Automatic delivery for sold items");
+          default:
+            logGreen("default case!");
+            break;
+        }
+      } else {
+        logRed("Wrong command!\nHere is all available commands:\n");
+
+        console.log(availableCommands);
+        return init();
       }
-    } else {
-      logRed("Wrong command!\nHere is all available commands:\n");
-
-      console.log(availableCommands);
-      return init();
-    }
-  });
+    })
+    .catch((err) => console.error(err));
 };
 
 // ----------------------------------------------deliver product
@@ -87,7 +89,7 @@ const sellProdLogic = (val, product, delivery) => {
 
 function sellDeliveryQuestion() {
   return new Promise((resolve) => {
-    prompt = inquirer.createPromptModule();
+    const prompt = inquirer.createPromptModule();
     prompt({
       type: "list",
       name: "selectLogic",
@@ -135,55 +137,63 @@ const selectProdLogic = (product, stocks) => {
 };
 
 async function validateUserInput(input) {
-  return new Promise((resolve) => {
-    let value = input[1];
-    if (!value) {
-      prompt = inquirer.createPromptModule();
-      prompt({
-        type: "input",
-        name: "amount",
-        message: "Please enter the amount you want",
-        validate: function (value) {
-          var valid = !isNaN(parseInt(value));
-          return valid || "Please enter a number";
-        },
-      })
-        .then((answers) => {
-          value = answers.amount;
-          resolve(value);
+  try {
+    return new Promise((resolve) => {
+      let value = input[1];
+      if (!value) {
+        const prompt = inquirer.createPromptModule();
+        prompt({
+          type: "input",
+          name: "amount",
+          message: "Please enter the amount you want",
+          validate: function (value) {
+            var valid = !isNaN(parseInt(value));
+            return valid || "Please enter a number";
+          },
         })
-        .catch((err) => logRed(err.message));
-    } else {
-      resolve(value);
-    }
-  });
+          .then((answers) => {
+            value = answers.amount;
+            resolve(value);
+          })
+          .catch((err) => logRed(err.message));
+      } else {
+        resolve(value);
+      }
+    });
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 async function selectProduct() {
-  return new Promise((resolve) => {
-    if (stocksHasProducts()) {
-      prompt = inquirer.createPromptModule();
-      prompt({
-        type: "list",
-        name: "selectedProduct",
-        message: "Please select the product",
-        choices: productIterator(stocks),
-        filter: function (val) {
-          return val.toLowerCase();
-        },
-      })
-        .then((answers) => {
-          resolve(answers.selectedProduct);
+  try {
+    return new Promise((resolve) => {
+      if (stocksHasProducts()) {
+        const prompt = inquirer.createPromptModule();
+        prompt({
+          type: "list",
+          name: "selectedProduct",
+          message: "Please select the product",
+          choices: productIterator(stocks),
+          filter: function (val) {
+            return val.toLowerCase();
+          },
         })
-        .catch((err) => logRed(err));
-    }
-    return;
-  });
+          .then((answers) => {
+            resolve(answers.selectedProduct);
+          })
+          .catch((err) => logRed(err));
+      }
+      return;
+    });
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 const stocksHasProducts = () => {
   if (stocks.length === 0) {
-    prompt = inquirer.createPromptModule();
+    const prompt = inquirer.createPromptModule();
     prompt({
       type: "confirm",
       name: "CreateNewStock",
@@ -210,140 +220,152 @@ const stocksHasProducts = () => {
 // ----------------------------------------------List product
 
 async function listProductsLogic() {
-  return new Promise((resolve) => {
-    logGreen("\nList all Product");
-    logGreen("__________________\n");
-    if (stocksHasProducts()) {
-      results = JSON.parse(JSON.stringify(stocks));
-      results.forEach((prod) => {
-        prod.delivered = `${prod.delivered} X`;
-        prod.quantity = `${prod.quantity} X`;
-        prod.price = `${prod.price} KR`;
-        prod.total = `${prod.total} KR`;
-        prod.sold = `${prod.sold} X`;
-      });
-      resolve(console.table(results));
-      // resolve(console.table(stocks));
-    }
-  });
+  try {
+    return new Promise((resolve) => {
+      logGreen("\nList all Product");
+      logGreen("__________________\n");
+      if (stocksHasProducts()) {
+        const results = JSON.parse(JSON.stringify(stocks));
+        results.forEach((prod) => {
+          prod.delivered = `${prod.delivered} X`;
+          prod.quantity = `${prod.quantity} X`;
+          prod.price = `${prod.price} KR`;
+          prod.total = `${prod.total} KR`;
+          prod.sold = `${prod.sold} X`;
+        });
+        resolve(console.table(results));
+        // resolve(console.table(stocks));
+      }
+    });
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 async function listProducts() {
-  await listProductsLogic();
-  init();
+  try {
+    await listProductsLogic();
+    init();
+  } catch (error) {
+    console.error();
+  }
 }
 
 // ----------------------------------------------Create product
 
 async function createProduct() {
-  return new Promise((resolve, reject) => {
-    logGreen("\nCreate new Product");
-    logGreen("__________________\n");
-    prompt = inquirer.createPromptModule();
-    prompt([
-      {
-        type: "input",
-        message: "Please enter your product name",
-        name: "name",
-        validate: function (value) {
-          //  TODO accept space in the name and make better validation
-          let pass = value.match(/^(?=.*[A-Za-z])[A-Za-z\d]{3,}$/i);
-          if (pass) {
-            return true;
-          }
+  try {
+    return new Promise((resolve) => {
+      logGreen("\nCreate new Product");
+      logGreen("__________________\n");
+      const prompt = inquirer.createPromptModule();
+      prompt([
+        {
+          type: "input",
+          message: "Please enter your product name",
+          name: "name",
+          validate: function (value) {
+            //  TODO accept space in the name and make better validation
+            let pass = value.match(/^(?=.*[A-Za-z])[A-Za-z\d]{3,}$/i);
+            if (pass) {
+              return true;
+            }
 
-          return "Please enter a valid string with at least 3 chars";
+            return "Please enter a valid string with at least 3 chars";
+          },
         },
-      },
-      {
-        type: "input",
-        message: "Enter product category",
-        name: "category",
-        validate: function (value) {
-          let pass = value.match(/^(?=.*[A-Za-z])[A-Za-z\d]{3,}$/i);
-          if (pass) {
-            return true;
-          }
+        {
+          type: "input",
+          message: "Enter product category",
+          name: "category",
+          validate: function (value) {
+            let pass = value.match(/^(?=.*[A-Za-z])[A-Za-z\d]{3,}$/i);
+            if (pass) {
+              return true;
+            }
 
-          return "Please enter a valid string with at least 3 chars";
+            return "Please enter a valid string with at least 3 chars";
+          },
+          default: function () {
+            return "general";
+          },
         },
-        default: function () {
-          return "general";
-        },
-      },
-      {
-        type: "input",
-        message: "Enter product count",
-        name: "quantity",
-        validate: function (value) {
-          if (Math.sign(value) === 1 && value < configValues.priceMaxVal) {
-            return true;
-          }
+        {
+          type: "input",
+          message: "Enter product count",
+          name: "quantity",
+          validate: function (value) {
+            if (Math.sign(value) === 1 && value < configValues.priceMaxVal) {
+              return true;
+            }
 
-          return "Please enter a valid number";
+            return "Please enter a valid number";
+          },
+          default: function () {
+            return configValues.defaultProductCount;
+          },
         },
-        default: function () {
-          return configValues.defaultProductCount;
+        {
+          type: "input",
+          message: "Enter product price in SEK",
+          name: "price",
+          validate: function (value) {
+            if (Math.sign(value) === 1) {
+              return true;
+            }
+            return "Please enter a valid number";
+          },
+          default: function () {
+            return configValues.defaultPrice;
+          },
         },
-      },
-      {
-        type: "input",
-        message: "Enter product price in SEK",
-        name: "price",
-        validate: function (value) {
-          if (Math.sign(value) === 1) {
-            return true;
-          }
-          return "Please enter a valid number";
+        {
+          type: "input",
+          message: "How many have been sold?",
+          name: "sold",
+          validate: function (value) {
+            if (
+              typeof value !== NaN &&
+              value >= 0 &&
+              value < configValues.priceMaxVal
+            ) {
+              return true;
+            }
+            return "Please enter a valid number";
+          },
+          default: function () {
+            return configValues.defaultDeliveredNumber;
+          },
         },
-        default: function () {
-          return configValues.defaultPrice;
+        {
+          type: "input",
+          message: "How many have been delivered?",
+          name: "delivered",
+          validate: function (value) {
+            if (
+              typeof value !== NaN &&
+              value >= 0 &&
+              value < configValues.deliveredMaxVal
+            ) {
+              return true;
+            }
+            return "Please enter a valid number";
+          },
+          default: function () {
+            return configValues.defaultDeliveredNumber;
+          },
         },
-      },
-      {
-        type: "input",
-        message: "How many have been sold?",
-        name: "sold",
-        validate: function (value) {
-          if (
-            typeof value !== NaN &&
-            value >= 0 &&
-            value < configValues.priceMaxVal
-          ) {
-            return true;
-          }
-          return "Please enter a valid number";
-        },
-        default: function () {
-          return configValues.defaultDeliveredNumber;
-        },
-      },
-      {
-        type: "input",
-        message: "How many have been delivered?",
-        name: "delivered",
-        validate: function (value) {
-          if (
-            typeof value !== NaN &&
-            value >= 0 &&
-            value < configValues.deliveredMaxVal
-          ) {
-            return true;
-          }
-          return "Please enter a valid number";
-        },
-        default: function () {
-          return configValues.defaultDeliveredNumber;
-        },
-      },
-    ])
-      .then((answers) => {
-        stocks.push(new Product.Product(answers));
-        resolve(listProductsLogic());
-        init();
-      })
-      .catch((err) => logRed(err));
-  });
+      ])
+        .then((answers) => {
+          stocks.push(new Product.Product(answers));
+          resolve(listProductsLogic());
+          init();
+        })
+        .catch((err) => logRed(err));
+    });
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 const welcome = () => {
