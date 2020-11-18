@@ -13,18 +13,18 @@ var _require = require("../config.js"),
     configValues = _require.configValues,
     availableCommands = _require.availableCommands;
 
-var _require$default = require("../utils/index.js")["default"],
-    objIterator = _require$default.objIterator,
-    productIterator = _require$default.productIterator,
-    logBlue = _require$default.logBlue,
-    logRed = _require$default.logRed,
-    logYellow = _require$default.logYellow,
-    logGreen = _require$default.logGreen;
+var _require2 = require("../utils/index.js"),
+    objIterator = _require2.objIterator,
+    productIterator = _require2.productIterator,
+    logBlue = _require2.logBlue,
+    logRed = _require2.logRed,
+    logYellow = _require2.logYellow,
+    logGreen = _require2.logGreen;
 
 var Product = require("../Models/Product.js");
 
-var _require2 = require("../Store/index.js"),
-    stocks = _require2.stocks;
+var _require3 = require("../Store/index.js"),
+    stocks = _require3.stocks;
 
 var inquirer = require("inquirer");
 

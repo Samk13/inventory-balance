@@ -4,11 +4,12 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 
 var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
-var utils = require("../utils/index.js")["default"];
+var _require = require("../utils/index.js"),
+    GenerateId = _require.GenerateId;
 
 var Product = function Product(answers) {
   (0, _classCallCheck2["default"])(this, Product);
-  this.id = utils.GenerateId();
+  this.id = GenerateId();
   this.name = answers.name;
   this.category = answers.category;
   this.quantity = parseInt(answers.quantity);

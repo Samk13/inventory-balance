@@ -1,8 +1,8 @@
 "use strict";
-const utils = require("../utils/index.js").default;
+const { GenerateId } = require("../utils/index.js");
 class Product {
   constructor(answers) {
-    this.id = utils.GenerateId();
+    this.id = GenerateId();
     this.name = answers.name;
     this.category = answers.category;
     this.quantity = parseInt(answers.quantity);
