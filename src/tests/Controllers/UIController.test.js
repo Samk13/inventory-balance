@@ -1,4 +1,5 @@
-const { sellProdLogic } = require("../../Controllers/UIController.js");
+// const { sellProdLogic } = require("../../Controllers/UIController.js");
+
 it("should work ", () => {
   expect(1).toBe(1);
 });

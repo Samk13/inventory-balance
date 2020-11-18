@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-'use strict';
+"use strict";
 
 const { init, welcome } = require("./Controllers/UIController.js");
 

@@ -1,5 +1,5 @@
 "use strict";
-const utils = require("../utils/index.js");
+const utils = require("../utils/index.js").default;
 class Product {
   constructor(answers) {
     this.id = utils.GenerateId();

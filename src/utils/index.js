@@ -13,18 +13,16 @@ function GenerateId() {
   return Math.floor(Math.pow(8, 8 - 1) + Math.random() * Math.floor(seed));
 }
 
-function objIterator(val) {
-  return Object.values(val);
-}
+const objIterator = (val) => Object.values(val);
 
-function productIterator(arr) {
+const productIterator = (arr) => {
   let result = [];
   for (let i = 0; i < stocks.length; i++) {
     result.push(arr[i].name.charAt(0).toUpperCase() + arr[i].name.slice(1));
   }
 
   return result;
-}
+};
 
 const logGreen = (log) => console.log(chalk.green(log));
 const logBlue = (log) => console.log(chalk.blue(log));
@@ -32,11 +30,11 @@ const logYellow = (log) => console.log(chalk.yellow(log));
 const logRed = (log) => console.log(chalk.bold.red(log));
 
 module.exports = {
+  objIterator,
+  productIterator,
   GenerateId,
   logGreen,
   logYellow,
   logRed,
   logBlue,
-  objIterator,
-  productIterator,
 };

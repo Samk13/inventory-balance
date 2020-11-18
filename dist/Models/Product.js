@@ -4,7 +4,7 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 
 var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));
 
-var utils = require("../utils/index.js");
+var utils = require("../utils/index.js")["default"];
 
 var Product = function Product(answers) {
   (0, _classCallCheck2["default"])(this, Product);

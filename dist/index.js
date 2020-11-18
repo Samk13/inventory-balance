@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-'use strict';
+"use strict";
 
 var _require = require("./Controllers/UIController.js"),
     init = _require.init,
