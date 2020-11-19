@@ -29,6 +29,13 @@ const logBlue = (log) => console.log(chalk.blue(log));
 const logYellow = (log) => console.log(chalk.yellow(log));
 const logRed = (log) => console.log(chalk.bold.red(log));
 
+const welcome = () => {
+  logYellow("\n\n\n*************************************");
+  logBlue("\n** >> WELCOME TO STOCK BALANCER << **");
+  logYellow("** >> Created by Sam Arbid 2020 << **");
+  logBlue("\n*************************************\n\n\n");
+};
+
 module.exports = {
   objIterator,
   productIterator,
@@ -37,4 +44,5 @@ module.exports = {
   logYellow,
   logRed,
   logBlue,
+  welcome,
 };

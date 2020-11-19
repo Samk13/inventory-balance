@@ -1,15 +1,24 @@
-const { actions, configValues, availableCommands } = require("../config.js");
-const {
-  objIterator,
-  productIterator,
-  logBlue,
-  logRed,
-  logYellow,
-  logGreen,
-} = require("../utils/index.js");
-const Product = require("../Models/Product.js");
+const { Product } = require("../Models/Product.js");
 const { stocks } = require("../Store/index.js");
 const inquirer = require("inquirer");
+const { availableCommands, configValues, actions } = require("../config.js");
+const {
+  productIterator,
+  objIterator,
+  logYellow,
+  logGreen,
+  logRed,
+} = require("../utils/index.js");
+
+const {
+  createNewProductLogic,
+  listProductLogic,
+  filterStocksProd,
+  sellProdLogic,
+  handleInput,
+} = require("./Logic");
+
+//  ---------------------------------
 
 const init = () => {
   const prompt = inquirer.createPromptModule();
@@ -21,10 +30,7 @@ const init = () => {
   })
     .then((answers) => {
       const commands = objIterator(availableCommands);
-      // validate and split the input into string and number
       const input = handleInput(answers.mainMenu);
-
-      // answers.mainMenu.trim().split(/([0-9]+)/);
 
       if (commands.includes(input[0])) {
         switch (input[0]) {
@@ -32,7 +38,7 @@ const init = () => {
             createProduct();
             break;
           case "L":
-            listProducts();
+            listProductsWithInit();
             break;
           case "l":
             deliverProduct(input);
@@ -48,7 +54,11 @@ const init = () => {
             break;
         }
       } else {
-        logRed("Wrong command!\nHere is all available commands:\n");
+        logRed("I didn't get your command!\n");
+        logGreen(
+          "Here is all available commands that I can understand for now:\n"
+        );
+        logGreen("And Yes! it's case Sensitive\n");
 
         console.log(availableCommands);
         return init();
@@ -59,8 +69,8 @@ const init = () => {
 
 // ----------------------------------------------deliver product
 const deliverProdLogic = (val, product) => {
-  selectProdLogic(product, stocks).delivered += parseInt(val);
-  return listProductsLogic();
+  filterStocksProd(product, stocks).delivered += parseInt(val);
+  return listAllProducts(stocks);
 };
 
 async function deliverProduct(userInput) {
@@ -79,18 +89,8 @@ async function deliverProduct(userInput) {
 }
 
 // ----------------------------------------------Sell product
-const sellProdLogic = (val, product, deliveryAuto, deliveryAmount) => {
-  const prod = selectProdLogic(product, stocks);
-  prod.sold += parseInt(val);
-  prod.quantity -= parseInt(val);
-  prod.total = parseInt(prod.price) * parseInt(prod.sold);
-  if (deliveryAuto && deliveryAmount) {
-    prod.delivered += parseInt(deliveryAmount);
-  }
-  return listProductsLogic();
-};
 
-function sellDeliveryQuestion() {
+function sellMethodQuestion() {
   return new Promise((resolve) => {
     const prompt = inquirer.createPromptModule();
     prompt({
@@ -118,20 +118,19 @@ function sellDeliveryQuestion() {
 
 async function sellProd(userInput) {
   try {
-    const deliverQuestion = await sellDeliveryQuestion();
+    const deliverQuestion = await sellMethodQuestion();
     const selectedProduct = await selectProduct();
     const sellAmount = await validateUserInput(userInput);
-    const filteredProdFromStore = stocks.filter(
-      (res) => res.name === selectedProduct
-    )[0];
-    filteredProdFromStore.quantity < sellAmount
+    filterStocksProd(selectedProduct, stocks).quantity < sellAmount
       ? logRed("Sell amount cannot exceed quantity!")
       : sellProdLogic(
           sellAmount,
           selectedProduct,
           deliverQuestion,
-          userInput[3]
-        );
+          userInput[3],
+          stocks
+        ),
+      listAllProducts(stocks);
 
     return init();
   } catch (error) {
@@ -140,13 +139,6 @@ async function sellProd(userInput) {
 }
 
 // ----------------------------------------------Utils
-const handleInput = (input) => {
-  return input.trim().split(/([0-9]+)/);
-};
-
-const selectProdLogic = (product, stocks) => {
-  return stocks.filter((res) => res.name === product)[0];
-};
 
 async function validateUserInput(input) {
   try {
@@ -164,8 +156,7 @@ async function validateUserInput(input) {
           },
         })
           .then((answers) => {
-            value = answers.amount;
-            resolve(value);
+            resolve(answers.amount);
           })
           .catch((err) => logRed(err.message));
       } else {
@@ -231,32 +222,24 @@ const stocksHasProducts = () => {
 
 // ----------------------------------------------List product
 
-async function listProductsLogic() {
+async function listAllProducts(stocks) {
   try {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       logGreen("\nList all Product");
       logGreen("__________________\n");
       if (stocksHasProducts()) {
-        const results = JSON.parse(JSON.stringify(stocks));
-        results.forEach((prod) => {
-          prod.delivered = `${prod.delivered} X`;
-          prod.quantity = `${prod.quantity} X`;
-          prod.price = `${prod.price} KR`;
-          prod.total = `${prod.total} KR`;
-          prod.sold = `${prod.sold} X`;
-        });
-        resolve(console.table(results));
-        // resolve(console.table(stocks));
+        resolve(console.table(listProductLogic(stocks)));
       }
+      reject("something wrong happen");
     });
   } catch (error) {
     console.error(error);
   }
 }
 
-async function listProducts() {
+async function listProductsWithInit() {
   try {
-    await listProductsLogic();
+    await listAllProducts(stocks);
     init();
   } catch (error) {
     console.error();
@@ -277,8 +260,8 @@ async function createProduct() {
           message: "Please enter your product name",
           name: "name",
           validate: function (value) {
-            //  TODO accept space in the name and make better validation
-            let pass = value.match(/^(?=.*[A-Za-z])[A-Za-z\d]{3,}$/i);
+            // No it does not accept number or spaces
+            let pass = value.match(/^([a-zA-Z_$][a-zA-Z\\d_$]*)$/i);
             if (pass) {
               return true;
             }
@@ -369,8 +352,8 @@ async function createProduct() {
         },
       ])
         .then((answers) => {
-          stocks.push(new Product.Product(answers));
-          resolve(listProductsLogic());
+          createNewProductLogic(answers, Product, stocks);
+          resolve(listAllProducts(stocks));
           init();
         })
         .catch((err) => logRed(err));
@@ -380,15 +363,7 @@ async function createProduct() {
   }
 }
 
-const welcome = () => {
-  logYellow("\n\n\n*************************************");
-  logBlue("\n** >> WELCOME TO STOCK BALANCER << **");
-  logYellow("** >> Created by Sam Arbid 2020 << **");
-  logBlue("\n*************************************\n\n\n");
-};
-
 module.exports = {
   createProduct,
-  welcome,
   init,
 };

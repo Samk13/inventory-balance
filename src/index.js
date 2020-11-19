@@ -2,7 +2,8 @@
 
 "use strict";
 
-const { init, welcome } = require("./Controllers/UIController.js");
+const { init } = require("./Controllers/UIController.js");
+const { welcome } = require("./utils/index");
 
 function main() {
   welcome();
