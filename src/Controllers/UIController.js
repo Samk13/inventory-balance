@@ -357,6 +357,7 @@ async function createProduct() {
         },
       ])
         .then((answers) => {
+          console.log(answers);
           stocks.push(new Product.Product(answers));
           resolve(listProductsLogic());
           init();
