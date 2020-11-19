@@ -22,7 +22,6 @@ const configValues = {
   defaultProductCount: 100,
   defaultPrice: 10,
   defaultDeliveredNumber: 0,
-  autoDeliverValues: [10, 5],
 };
 
 module.exports = {

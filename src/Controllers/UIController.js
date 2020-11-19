@@ -22,7 +22,9 @@ const init = () => {
     .then((answers) => {
       const commands = objIterator(availableCommands);
       // validate and split the input into string and number
-      const input = answers.mainMenu.trim().split(/([0-9]+)/);
+      const input = handleInput(answers.mainMenu);
+
+      // answers.mainMenu.trim().split(/([0-9]+)/);
 
       if (commands.includes(input[0])) {
         switch (input[0]) {
@@ -36,6 +38,7 @@ const init = () => {
             deliverProduct(input);
             break;
           case "S":
+            console.log(input);
             sellProd(input);
             break;
           case "lAuto":
@@ -76,13 +79,13 @@ async function deliverProduct(userInput) {
 }
 
 // ----------------------------------------------Sell product
-const sellProdLogic = (val, product, delivery) => {
+const sellProdLogic = (val, product, deliveryAuto, deliveryAmount) => {
   const prod = selectProdLogic(product, stocks);
   prod.sold += parseInt(val);
   prod.quantity -= parseInt(val);
   prod.total = parseInt(prod.price) * parseInt(prod.sold);
-  if (delivery && configValues.autoDeliverValues.includes(parseInt(val))) {
-    prod.delivered += parseInt(val);
+  if (deliveryAuto && deliveryAmount) {
+    prod.delivered += parseInt(deliveryAmount);
   }
   return listProductsLogic();
 };
@@ -94,10 +97,7 @@ function sellDeliveryQuestion() {
       type: "list",
       name: "selectLogic",
       message: "Please select selling method",
-      choices: [
-        "Sell without delivery",
-        "Sell with delivery for only 5 and 10 orders",
-      ],
+      choices: ["Sell without delivery", "Sell with auto delivery"],
       filter: function (val) {
         return val;
       },
@@ -107,7 +107,7 @@ function sellDeliveryQuestion() {
           case "Sell without delivery":
             resolve(false);
             break;
-          case "Sell with delivery for only 5 and 10 orders":
+          case "Sell with auto delivery":
             resolve(true);
             break;
         }
@@ -121,10 +121,18 @@ async function sellProd(userInput) {
     const deliverQuestion = await sellDeliveryQuestion();
     const selectedProduct = await selectProduct();
     const sellAmount = await validateUserInput(userInput);
-    const selected = stocks.filter((res) => res.name === selectedProduct)[0];
-    selected.quantity < sellAmount
+    const filteredProdFromStore = stocks.filter(
+      (res) => res.name === selectedProduct
+    )[0];
+    filteredProdFromStore.quantity < sellAmount
       ? logRed("Sell amount cannot exceed quantity!")
-      : sellProdLogic(sellAmount, selectedProduct, deliverQuestion);
+      : sellProdLogic(
+          sellAmount,
+          selectedProduct,
+          deliverQuestion,
+          userInput[3]
+        );
+
     return init();
   } catch (error) {
     console.error(error);
@@ -132,6 +140,10 @@ async function sellProd(userInput) {
 }
 
 // ----------------------------------------------Utils
+const handleInput = (input) => {
+  return input.trim().split(/([0-9]+)/);
+};
+
 const selectProdLogic = (product, stocks) => {
   return stocks.filter((res) => res.name === product)[0];
 };
