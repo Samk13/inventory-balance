@@ -11,19 +11,6 @@ class Product {
     this.sold = parseInt(answers.sold) || 0;
     this.total = parseInt(answers.price) * parseInt(answers.sold) || 0;
   }
-
-  // getProduct() {
-  //   return {
-  //     id: this.id,
-  //     name: this.name,
-  //     category: this.category,
-  //     quantity: parseInt(this.quantity),
-  //     sold: parseInt(this.sold),
-  //     price: parseInt(this.price),
-  //     delivered: parseInt(this.delivered),
-  //     total: parseInt(this.total),
-  //   };
-  // }
 }
 
 module.exports = {
