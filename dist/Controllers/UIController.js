@@ -2,8 +2,6 @@
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-var _typeof2 = _interopRequireDefault(require("@babel/runtime/helpers/typeof"));
-
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
@@ -38,7 +36,7 @@ var init = function init() {
   }).then(function (answers) {
     var commands = objIterator(availableCommands); // validate and split the input into string and number
 
-    var input = answers.mainMenu.trim().split(/([0-9]+)/);
+    var input = handleInput(answers.mainMenu); // answers.mainMenu.trim().split(/([0-9]+)/);
 
     if (commands.includes(input[0])) {
       switch (input[0]) {
@@ -58,11 +56,12 @@ var init = function init() {
           sellProd(input);
           break;
 
-        case "lAuto":
-          logGreen("Automatic delivery for sold items");
+        case "SP":
+          logGreen("Sell packages");
+          break;
 
         default:
-          logGreen("default case!");
+          init();
           break;
       }
     } else {
@@ -125,14 +124,14 @@ function _deliverProduct() {
   return _deliverProduct.apply(this, arguments);
 }
 
-var sellProdLogic = function sellProdLogic(val, product, delivery) {
+var sellProdLogic = function sellProdLogic(val, product, deliveryAuto, deliveryAmount) {
   var prod = selectProdLogic(product, stocks);
   prod.sold += parseInt(val);
   prod.quantity -= parseInt(val);
   prod.total = parseInt(prod.price) * parseInt(prod.sold);
 
-  if (delivery && configValues.autoDeliverValues.includes(parseInt(val))) {
-    prod.delivered += parseInt(val);
+  if (deliveryAuto && deliveryAmount) {
+    prod.delivered += parseInt(deliveryAmount);
   }
 
   return listProductsLogic();
@@ -145,7 +144,7 @@ function sellDeliveryQuestion() {
       type: "list",
       name: "selectLogic",
       message: "Please select selling method",
-      choices: ["Sell without delivery", "Sell with delivery for only 5 and 10 orders"],
+      choices: ["Sell without delivery", "Sell with auto delivery"],
       filter: function filter(val) {
         return val;
       }
@@ -155,7 +154,7 @@ function sellDeliveryQuestion() {
           resolve(false);
           break;
 
-        case "Sell with delivery for only 5 and 10 orders":
+        case "Sell with auto delivery":
           resolve(true);
           break;
       }
@@ -172,7 +171,7 @@ function sellProd(_x2) {
 
 function _sellProd() {
   _sellProd = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(userInput) {
-    var deliverQuestion, selectedProduct, sellAmount, selected;
+    var deliverQuestion, selectedProduct, sellAmount, filteredProdFromStore;
     return _regenerator["default"].wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
@@ -193,10 +192,10 @@ function _sellProd() {
 
           case 9:
             sellAmount = _context2.sent;
-            selected = stocks.filter(function (res) {
+            filteredProdFromStore = stocks.filter(function (res) {
               return res.name === selectedProduct;
             })[0];
-            selected.quantity < sellAmount ? logRed("Sell amount cannot exceed quantity!") : sellProdLogic(sellAmount, selectedProduct, deliverQuestion);
+            filteredProdFromStore.quantity < sellAmount ? logRed("Sell amount cannot exceed quantity!") : sellProdLogic(sellAmount, selectedProduct, deliverQuestion, userInput[3]);
             return _context2.abrupt("return", init());
 
           case 15:
@@ -213,6 +212,10 @@ function _sellProd() {
   }));
   return _sellProd.apply(this, arguments);
 }
+
+var handleInput = function handleInput(input) {
+  return input.trim().split(/([0-9]+)/);
+};
 
 var selectProdLogic = function selectProdLogic(product, stocks) {
   return stocks.filter(function (res) {
@@ -498,7 +501,7 @@ function _createProduct() {
                 message: "How many have been sold?",
                 name: "sold",
                 validate: function validate(value) {
-                  if ((0, _typeof2["default"])(value) !== NaN && value >= 0 && value < configValues.priceMaxVal) {
+                  if (!isNaN(value) && value >= 0 && value < configValues.priceMaxVal) {
                     return true;
                   }
 
@@ -512,7 +515,7 @@ function _createProduct() {
                 message: "How many have been delivered?",
                 name: "delivered",
                 validate: function validate(value) {
-                  if ((0, _typeof2["default"])(value) !== NaN && value >= 0 && value < configValues.deliveredMaxVal) {
+                  if (!isNaN(value) && value >= 0 && value < configValues.deliveredMaxVal) {
                     return true;
                   }
 

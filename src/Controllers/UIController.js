@@ -38,11 +38,11 @@ const init = () => {
             deliverProduct(input);
             break;
           case "S":
-            console.log(input);
             sellProd(input);
             break;
           case "SP":
-            logGreen("Sell packagees");
+            logGreen("Sell packages");
+            break;
           default:
             init();
             break;
@@ -337,7 +337,7 @@ async function createProduct() {
           name: "sold",
           validate: function (value) {
             if (
-              typeof value !== NaN &&
+              !isNaN(value) &&
               value >= 0 &&
               value < configValues.priceMaxVal
             ) {
@@ -355,7 +355,7 @@ async function createProduct() {
           name: "delivered",
           validate: function (value) {
             if (
-              typeof value !== NaN &&
+              !isNaN(value) &&
               value >= 0 &&
               value < configValues.deliveredMaxVal
             ) {

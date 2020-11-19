@@ -9,6 +9,7 @@ beforeEach(function () {
   Product.mockClear();
 });
 it("Check if the consumer called the class constructor", function () {
+  // eslint-disable-next-line no-unused-vars
   var consumeProduct = new Product();
   expect(Product).toHaveBeenCalledTimes(1);
 });

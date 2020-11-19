@@ -44,6 +44,10 @@ The user interface must contain three functions:
 
 - Create unit tests for calculation logic.
 
+[x] add babel for backwards compatibility
+
+[x] add esLint for code consistency
+
 # install && run
 
 ```zsh

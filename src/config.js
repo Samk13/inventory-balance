@@ -9,8 +9,8 @@ const actions = {
 const availableCommands = {
   createNewProduct: "c",
   listProduct: "L",
-  sell: "S",
-  deliver: "l",
+  sellProduct: "S",
+  deliverProduct: "l",
   sellPackage: "SP",
 };
 
