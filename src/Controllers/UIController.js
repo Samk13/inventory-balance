@@ -41,10 +41,10 @@ const init = () => {
             console.log(input);
             sellProd(input);
             break;
-          case "lAuto":
-            logGreen("Automatic delivery for sold items");
+          case "SP":
+            logGreen("Sell packagees");
           default:
-            logGreen("default case!");
+            init();
             break;
         }
       } else {

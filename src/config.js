@@ -11,7 +11,6 @@ const availableCommands = {
   listProduct: "L",
   sell: "S",
   deliver: "l",
-  deliverAuto: "lAuto",
   sellPackage: "SP",
 };
 
