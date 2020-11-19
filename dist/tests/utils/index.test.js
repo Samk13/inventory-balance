@@ -1,19 +1,20 @@
-const { objIterator, productIterator } = require("../../utils/index.js");
+"use strict";
 
-test("iterate throw object should returns an array of the values only", () => {
-  const values = {
+var _require = require("../../utils/index.js"),
+    objIterator = _require.objIterator,
+    productIterator = _require.productIterator;
+
+test("iterate throw object should returns an array of the values only", function () {
+  var values = {
     createNewProduct: "c",
     listProduct: "L",
     sell: "S",
     deliver: "l",
     deliverAuto: "lAuto",
-    sellPackage: "SP",
+    sellPackage: "SP"
   };
-
   expect(objIterator(values)).toEqual(["c", "L", "S", "l", "lAuto", "SP"]);
-});
-
-// test("iterate throw the product object and return an array of all obj.name with upper case ", () => {
+}); // test("iterate throw the product object and return an array of all obj.name with upper case ", () => {
 //   const stocks = [
 //     {
 //       id: 13233,
@@ -29,6 +30,6 @@ test("iterate throw object should returns an array of the values only", () => {
 //   expect(productIterator(stocks)).toEqual(["Test1", "Test2"]);
 // });
 
-test("It should Pass!", () => {
+test("It should Pass!", function () {
   expect(1).toBe(1);
 });

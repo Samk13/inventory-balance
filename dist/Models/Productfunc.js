@@ -1,4 +1,6 @@
-const utils = require("../utils/index.js");
+"use strict";
+
+var utils = require("../utils/index.js");
 
 function Product(answers) {
   return {
@@ -9,10 +11,10 @@ function Product(answers) {
     price: answers.price,
     delivered: 0,
     sold: 0,
-    total: 0,
+    total: 0
   };
 }
 
 module.exports = {
-  Product,
+  Product: Product
 };

@@ -1,4 +1,6 @@
-// const { init2, welcome } = require("./Controllers/InterfaceController.js");
+#!/usr/bin/env node
+
+"use strict";
 
 const { init, welcome } = require("./Controllers/UIController.js");
 

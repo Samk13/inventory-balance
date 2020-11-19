@@ -1,4 +1,4 @@
-stocks = [];
+const stocks = [];
 
 module.exports = {
   stocks,
