@@ -1,4 +1,4 @@
-const { objIterator, productIterator } = require("../../utils/index.js");
+const { objIterator } = require("../../utils/index.js");
 
 test("iterate throw object should returns an array of the values only", () => {
   const values = {

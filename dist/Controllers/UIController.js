@@ -2,31 +2,37 @@
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-var _typeof2 = _interopRequireDefault(require("@babel/runtime/helpers/typeof"));
-
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
-var _require = require("../config.js"),
-    actions = _require.actions,
-    configValues = _require.configValues,
-    availableCommands = _require.availableCommands;
+var _require = require("../Models/Product.js"),
+    Product = _require.Product;
 
-var _require2 = require("../utils/index.js"),
-    objIterator = _require2.objIterator,
-    productIterator = _require2.productIterator,
-    logBlue = _require2.logBlue,
-    logRed = _require2.logRed,
-    logYellow = _require2.logYellow,
-    logGreen = _require2.logGreen;
-
-var Product = require("../Models/Product.js");
-
-var _require3 = require("../Store/index.js"),
-    stocks = _require3.stocks;
+var _require2 = require("../Store/index.js"),
+    stocks = _require2.stocks;
 
 var inquirer = require("inquirer");
+
+var _require3 = require("../config.js"),
+    availableCommands = _require3.availableCommands,
+    configValues = _require3.configValues,
+    actions = _require3.actions;
+
+var _require4 = require("../utils/index.js"),
+    productIterator = _require4.productIterator,
+    objIterator = _require4.objIterator,
+    logYellow = _require4.logYellow,
+    logGreen = _require4.logGreen,
+    logRed = _require4.logRed;
+
+var _require5 = require("./Logic"),
+    createNewProductLogic = _require5.createNewProductLogic,
+    listProductLogic = _require5.listProductLogic,
+    filterStocksProd = _require5.filterStocksProd,
+    sellProdLogic = _require5.sellProdLogic,
+    handleInput = _require5.handleInput; //  ---------------------------------
+
 
 var init = function init() {
   var prompt = inquirer.createPromptModule();
@@ -36,9 +42,8 @@ var init = function init() {
     choices: objIterator(actions),
     message: "What action you wanna take?\n\n"
   }).then(function (answers) {
-    var commands = objIterator(availableCommands); // validate and split the input into string and number
-
-    var input = answers.mainMenu.trim().split(/([0-9]+)/);
+    var commands = objIterator(availableCommands);
+    var input = handleInput(answers.mainMenu);
 
     if (commands.includes(input[0])) {
       switch (input[0]) {
@@ -47,7 +52,7 @@ var init = function init() {
           break;
 
         case "L":
-          listProducts();
+          listProductsWithInit();
           break;
 
         case "l":
@@ -58,15 +63,18 @@ var init = function init() {
           sellProd(input);
           break;
 
-        case "lAuto":
-          logGreen("Automatic delivery for sold items");
+        case "SP":
+          logGreen("Sell packages");
+          break;
 
         default:
-          logGreen("default case!");
+          init();
           break;
       }
     } else {
-      logRed("Wrong command!\nHere is all available commands:\n");
+      logRed("I didn't get your command!\n");
+      logGreen("Here is all available commands that I can understand for now:\n");
+      logGreen("And Yes! it's case Sensitive\n");
       console.log(availableCommands);
       return init();
     }
@@ -76,9 +84,9 @@ var init = function init() {
 }; // ----------------------------------------------deliver product
 
 
-var deliverProdLogic = function deliverProdLogic(val, product) {
-  selectProdLogic(product, stocks).delivered += parseInt(val);
-  return listProductsLogic();
+var deliverProdLogic = function deliverProdLogic(val, product, stocks) {
+  filterStocksProd(product, stocks).delivered += parseInt(val);
+  return listAllProducts(stocks);
 };
 
 function deliverProduct(_x) {
@@ -107,7 +115,13 @@ function _deliverProduct() {
             selected = stocks.filter(function (res) {
               return res.name === selectedProd;
             })[0];
-            selected.quantity < deliveryAmount ? logRed("Deliver amount cannot exceed quantity!") : deliverProdLogic(deliveryAmount, selectedProd);
+
+            if (selected.quantity < deliveryAmount) {
+              logRed("Deliver amount cannot exceed quantity!");
+            } else {
+              deliverProdLogic(deliveryAmount, selectedProd, stocks);
+            }
+
             return _context.abrupt("return", init());
 
           case 12:
@@ -125,27 +139,14 @@ function _deliverProduct() {
   return _deliverProduct.apply(this, arguments);
 }
 
-var sellProdLogic = function sellProdLogic(val, product, delivery) {
-  var prod = selectProdLogic(product, stocks);
-  prod.sold += parseInt(val);
-  prod.quantity -= parseInt(val);
-  prod.total = parseInt(prod.price) * parseInt(prod.sold);
-
-  if (delivery && configValues.autoDeliverValues.includes(parseInt(val))) {
-    prod.delivered += parseInt(val);
-  }
-
-  return listProductsLogic();
-};
-
-function sellDeliveryQuestion() {
+function sellMethodQuestion() {
   return new Promise(function (resolve) {
     var prompt = inquirer.createPromptModule();
     prompt({
       type: "list",
       name: "selectLogic",
       message: "Please select selling method",
-      choices: ["Sell without delivery", "Sell with delivery for only 5 and 10 orders"],
+      choices: ["Sell without delivery", "Sell with auto delivery"],
       filter: function filter(val) {
         return val;
       }
@@ -155,7 +156,7 @@ function sellDeliveryQuestion() {
           resolve(false);
           break;
 
-        case "Sell with delivery for only 5 and 10 orders":
+        case "Sell with auto delivery":
           resolve(true);
           break;
       }
@@ -172,17 +173,17 @@ function sellProd(_x2) {
 
 function _sellProd() {
   _sellProd = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(userInput) {
-    var deliverQuestion, selectedProduct, sellAmount, selected;
+    var autoDeliveryQuestion, selectedProduct, sellAmount, deliverAmount;
     return _regenerator["default"].wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
             _context2.prev = 0;
             _context2.next = 3;
-            return sellDeliveryQuestion();
+            return sellMethodQuestion();
 
           case 3:
-            deliverQuestion = _context2.sent;
+            autoDeliveryQuestion = _context2.sent;
             _context2.next = 6;
             return selectProduct();
 
@@ -193,32 +194,65 @@ function _sellProd() {
 
           case 9:
             sellAmount = _context2.sent;
-            selected = stocks.filter(function (res) {
-              return res.name === selectedProduct;
-            })[0];
-            selected.quantity < sellAmount ? logRed("Sell amount cannot exceed quantity!") : sellProdLogic(sellAmount, selectedProduct, deliverQuestion);
+
+            if (!(filterStocksProd(selectedProduct, stocks).quantity < sellAmount)) {
+              _context2.next = 14;
+              break;
+            }
+
+            logRed("Sell amount cannot exceed quantity!");
+            _context2.next = 28;
+            break;
+
+          case 14:
+            if (!autoDeliveryQuestion) {
+              _context2.next = 26;
+              break;
+            }
+
+            if (userInput[3]) {
+              _context2.next = 23;
+              break;
+            }
+
+            _context2.next = 18;
+            return validateUserInput(userInput);
+
+          case 18:
+            deliverAmount = _context2.sent;
+            sellProdLogic(sellAmount, selectedProduct, stocks);
+            deliverProdLogic(deliverAmount, selectedProduct, stocks);
+            _context2.next = 25;
+            break;
+
+          case 23:
+            sellProdLogic(sellAmount, selectedProduct, stocks);
+            deliverProdLogic(userInput[3], selectedProduct, stocks);
+
+          case 25:
             return _context2.abrupt("return", init());
 
-          case 15:
-            _context2.prev = 15;
+          case 26:
+            sellProdLogic(sellAmount, selectedProduct, stocks);
+            listAllProducts(stocks);
+
+          case 28:
+            return _context2.abrupt("return", init());
+
+          case 31:
+            _context2.prev = 31;
             _context2.t0 = _context2["catch"](0);
             console.error(_context2.t0);
 
-          case 18:
+          case 34:
           case "end":
             return _context2.stop();
         }
       }
-    }, _callee2, null, [[0, 15]]);
+    }, _callee2, null, [[0, 31]]);
   }));
   return _sellProd.apply(this, arguments);
 }
-
-var selectProdLogic = function selectProdLogic(product, stocks) {
-  return stocks.filter(function (res) {
-    return res.name === product;
-  })[0];
-};
 
 function validateUserInput(_x3) {
   return _validateUserInput.apply(this, arguments);
@@ -245,8 +279,7 @@ function _validateUserInput() {
                     return valid || "Please enter a number";
                   }
                 }).then(function (answers) {
-                  value = answers.amount;
-                  resolve(value);
+                  resolve(answers.amount);
                 })["catch"](function (err) {
                   return logRed(err.message);
                 });
@@ -342,32 +375,26 @@ var stocksHasProducts = function stocksHasProducts() {
 }; // ----------------------------------------------List product
 
 
-function listProductsLogic() {
-  return _listProductsLogic.apply(this, arguments);
+function listAllProducts(_x4) {
+  return _listAllProducts.apply(this, arguments);
 }
 
-function _listProductsLogic() {
-  _listProductsLogic = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5() {
+function _listAllProducts() {
+  _listAllProducts = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5(stocks) {
     return _regenerator["default"].wrap(function _callee5$(_context5) {
       while (1) {
         switch (_context5.prev = _context5.next) {
           case 0:
             _context5.prev = 0;
-            return _context5.abrupt("return", new Promise(function (resolve) {
+            return _context5.abrupt("return", new Promise(function (resolve, reject) {
               logGreen("\nList all Product");
               logGreen("__________________\n");
 
               if (stocksHasProducts()) {
-                var results = JSON.parse(JSON.stringify(stocks));
-                results.forEach(function (prod) {
-                  prod.delivered = "".concat(prod.delivered, " X");
-                  prod.quantity = "".concat(prod.quantity, " X");
-                  prod.price = "".concat(prod.price, " KR");
-                  prod.total = "".concat(prod.total, " KR");
-                  prod.sold = "".concat(prod.sold, " X");
-                });
-                resolve(console.table(results)); // resolve(console.table(stocks));
+                resolve(console.table(listProductLogic(stocks)));
               }
+
+              reject("something wrong happen");
             }));
 
           case 4:
@@ -382,23 +409,23 @@ function _listProductsLogic() {
       }
     }, _callee5, null, [[0, 4]]);
   }));
-  return _listProductsLogic.apply(this, arguments);
+  return _listAllProducts.apply(this, arguments);
 }
 
-function listProducts() {
-  return _listProducts.apply(this, arguments);
+function listProductsWithInit() {
+  return _listProductsWithInit.apply(this, arguments);
 } // ----------------------------------------------Create product
 
 
-function _listProducts() {
-  _listProducts = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee6() {
+function _listProductsWithInit() {
+  _listProductsWithInit = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee6() {
     return _regenerator["default"].wrap(function _callee6$(_context6) {
       while (1) {
         switch (_context6.prev = _context6.next) {
           case 0:
             _context6.prev = 0;
             _context6.next = 3;
-            return listProductsLogic();
+            return listAllProducts(stocks);
 
           case 3:
             init();
@@ -417,7 +444,7 @@ function _listProducts() {
       }
     }, _callee6, null, [[0, 6]]);
   }));
-  return _listProducts.apply(this, arguments);
+  return _listProductsWithInit.apply(this, arguments);
 }
 
 function createProduct() {
@@ -440,8 +467,8 @@ function _createProduct() {
                 message: "Please enter your product name",
                 name: "name",
                 validate: function validate(value) {
-                  //  TODO accept space in the name and make better validation
-                  var pass = value.match(/^(?=.*[A-Za-z])[A-Za-z\d]{3,}$/i);
+                  // No it does not accept number or spaces
+                  var pass = value.match(/^([a-zA-Z_$][a-zA-Z\\d_$]*)$/i);
 
                   if (pass) {
                     return true;
@@ -498,7 +525,7 @@ function _createProduct() {
                 message: "How many have been sold?",
                 name: "sold",
                 validate: function validate(value) {
-                  if ((0, _typeof2["default"])(value) !== NaN && value >= 0 && value < configValues.priceMaxVal) {
+                  if (!isNaN(value) && value >= 0 && value < configValues.priceMaxVal) {
                     return true;
                   }
 
@@ -512,7 +539,7 @@ function _createProduct() {
                 message: "How many have been delivered?",
                 name: "delivered",
                 validate: function validate(value) {
-                  if ((0, _typeof2["default"])(value) !== NaN && value >= 0 && value < configValues.deliveredMaxVal) {
+                  if (!isNaN(value) && value >= 0 && value < configValues.deliveredMaxVal) {
                     return true;
                   }
 
@@ -522,8 +549,8 @@ function _createProduct() {
                   return configValues.defaultDeliveredNumber;
                 }
               }]).then(function (answers) {
-                stocks.push(new Product.Product(answers));
-                resolve(listProductsLogic());
+                createNewProductLogic(answers, Product, stocks);
+                resolve(listAllProducts(stocks));
                 init();
               })["catch"](function (err) {
                 return logRed(err);
@@ -545,15 +572,7 @@ function _createProduct() {
   return _createProduct.apply(this, arguments);
 }
 
-var welcome = function welcome() {
-  logYellow("\n\n\n*************************************");
-  logBlue("\n** >> WELCOME TO STOCK BALANCER << **");
-  logYellow("** >> Created by Sam Arbid 2020 << **");
-  logBlue("\n*************************************\n\n\n");
-};
-
 module.exports = {
   createProduct: createProduct,
-  welcome: welcome,
   init: init
 };

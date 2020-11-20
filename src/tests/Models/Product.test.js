@@ -8,6 +8,7 @@ beforeEach(() => {
 });
 
 it("Check if the consumer called the class constructor", () => {
+  // eslint-disable-next-line no-unused-vars
   const consumeProduct = new Product();
   expect(Product).toHaveBeenCalledTimes(1);
 });

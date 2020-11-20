@@ -41,6 +41,13 @@ var logRed = function logRed(log) {
   return console.log(chalk.bold.red(log));
 };
 
+var welcome = function welcome() {
+  logYellow("\n\n\n*************************************");
+  logBlue("\n** >> WELCOME TO STOCK BALANCER << **");
+  logYellow("** >> Created by Sam Arbid 2020 << **");
+  logBlue("\n*************************************\n\n\n");
+};
+
 module.exports = {
   objIterator: objIterator,
   productIterator: productIterator,
@@ -48,5 +55,6 @@ module.exports = {
   logGreen: logGreen,
   logYellow: logYellow,
   logRed: logRed,
-  logBlue: logBlue
+  logBlue: logBlue,
+  welcome: welcome
 };

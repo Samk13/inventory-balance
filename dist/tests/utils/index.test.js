@@ -1,8 +1,7 @@
 "use strict";
 
 var _require = require("../../utils/index.js"),
-    objIterator = _require.objIterator,
-    productIterator = _require.productIterator;
+    objIterator = _require.objIterator;
 
 test("iterate throw object should returns an array of the values only", function () {
   var values = {

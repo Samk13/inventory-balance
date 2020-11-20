@@ -10,9 +10,8 @@ var actions = {
 var availableCommands = {
   createNewProduct: "c",
   listProduct: "L",
-  sell: "S",
-  deliver: "l",
-  deliverAuto: "lAuto",
+  sellProduct: "S",
+  deliverProduct: "l",
   sellPackage: "SP"
 };
 var configValues = {
@@ -21,8 +20,7 @@ var configValues = {
   sellMaxVal: 100000,
   defaultProductCount: 100,
   defaultPrice: 10,
-  defaultDeliveredNumber: 0,
-  autoDeliverValues: [10, 5]
+  defaultDeliveredNumber: 0
 };
 module.exports = {
   actions: actions,

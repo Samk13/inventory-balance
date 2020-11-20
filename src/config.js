@@ -9,8 +9,8 @@ const actions = {
 const availableCommands = {
   createNewProduct: "c",
   listProduct: "L",
-  sell: "S",
-  deliver: "l",
+  sellProduct: "S",
+  deliverProduct: "l",
   sellPackage: "SP",
 };
 
@@ -21,6 +21,8 @@ const configValues = {
   defaultProductCount: 100,
   defaultPrice: 10,
   defaultDeliveredNumber: 0,
+  priceMinimumAmountDiscount: 3,
+  priceDiscount: (1 / 4) * 100,
 };
 
 module.exports = {
