@@ -18,9 +18,7 @@ The user interface must contain three functions:
 
 [x] data does not need to be stored in any other way than in the primary memory.
 
-### TODO
-
-[-] Remember to structure the code so that the presentation is separated from the calculation logic. The logic can be reused e.g. in a web application.
+[x] Remember to structure the code so that the presentation is separated from the calculation logic. The logic can be reused e.g. in a web application.
 
 ## Addition
 
@@ -36,13 +34,9 @@ The user interface must contain three functions:
 
 [x] Add item prices and show total amounts at sale.
 
-### TODO
+[x] Add discounts, e.g. buy three and get one for free.
 
-[-] Add discounts, e.g. buy three and get one for free.
-
-### TODO
-
-- Create unit tests for calculation logic.
+[x] Create unit tests for calculation logic.
 
 [x] add babel for backwards compatibility
 
