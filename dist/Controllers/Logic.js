@@ -4,11 +4,7 @@ var handleInput = function handleInput(input) {
   return input.trim().split(/([0-9]+)/);
 };
 
-var createNewProductLogic = function createNewProductLogic(
-  answersObj,
-  prodClass,
-  storeArr
-) {
+var createNewProductLogic = function createNewProductLogic(answersObj, prodClass, storeArr) {
   return storeArr.push(new prodClass(answersObj));
 };
 
@@ -35,17 +31,17 @@ var sellProdLogic = function sellProdLogic(val, product, stocks) {
   prod.sold += parseInt(val);
   prod.quantity -= parseInt(val);
   prod.total = parseInt(prod.price) * parseInt(prod.sold);
-
   return;
 };
 /**
  * Exports
  */
 
+
 module.exports = {
   createNewProductLogic: createNewProductLogic,
   listProductLogic: listProductLogic,
   filterStocksProd: filterStocksProd,
   sellProdLogic: sellProdLogic,
-  handleInput: handleInput,
+  handleInput: handleInput
 };

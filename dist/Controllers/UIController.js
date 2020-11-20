@@ -84,7 +84,7 @@ var init = function init() {
 }; // ----------------------------------------------deliver product
 
 
-var deliverProdLogic = function deliverProdLogic(val, product) {
+var deliverProdLogic = function deliverProdLogic(val, product, stocks) {
   filterStocksProd(product, stocks).delivered += parseInt(val);
   return listAllProducts(stocks);
 };
@@ -119,7 +119,7 @@ function _deliverProduct() {
             if (selected.quantity < deliveryAmount) {
               logRed("Deliver amount cannot exceed quantity!");
             } else {
-              deliverProdLogic(deliveryAmount, selectedProd);
+              deliverProdLogic(deliveryAmount, selectedProd, stocks);
             }
 
             return _context.abrupt("return", init());
@@ -173,7 +173,7 @@ function sellProd(_x2) {
 
 function _sellProd() {
   _sellProd = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(userInput) {
-    var deliverQuestion, selectedProduct, sellAmount;
+    var autoDeliveryQuestion, selectedProduct, sellAmount, deliverAmount;
     return _regenerator["default"].wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
@@ -183,7 +183,7 @@ function _sellProd() {
             return sellMethodQuestion();
 
           case 3:
-            deliverQuestion = _context2.sent;
+            autoDeliveryQuestion = _context2.sent;
             _context2.next = 6;
             return selectProduct();
 
@@ -195,26 +195,61 @@ function _sellProd() {
           case 9:
             sellAmount = _context2.sent;
 
-            if (filterStocksProd(selectedProduct, stocks).quantity < sellAmount) {
-              logRed("Sell amount cannot exceed quantity!");
-            } else {
-              sellProdLogic(sellAmount, selectedProduct, deliverQuestion, userInput[3], stocks);
-              listAllProducts(stocks);
+            if (!(filterStocksProd(selectedProduct, stocks).quantity < sellAmount)) {
+              _context2.next = 14;
+              break;
             }
 
-            return _context2.abrupt("return", init());
+            logRed("Sell amount cannot exceed quantity!");
+            _context2.next = 28;
+            break;
 
           case 14:
-            _context2.prev = 14;
+            if (!autoDeliveryQuestion) {
+              _context2.next = 26;
+              break;
+            }
+
+            if (userInput[3]) {
+              _context2.next = 23;
+              break;
+            }
+
+            _context2.next = 18;
+            return validateUserInput(userInput);
+
+          case 18:
+            deliverAmount = _context2.sent;
+            sellProdLogic(sellAmount, selectedProduct, stocks);
+            deliverProdLogic(deliverAmount, selectedProduct, stocks);
+            _context2.next = 25;
+            break;
+
+          case 23:
+            sellProdLogic(sellAmount, selectedProduct, stocks);
+            deliverProdLogic(userInput[3], selectedProduct, stocks);
+
+          case 25:
+            return _context2.abrupt("return", init());
+
+          case 26:
+            sellProdLogic(sellAmount, selectedProduct, stocks);
+            listAllProducts(stocks);
+
+          case 28:
+            return _context2.abrupt("return", init());
+
+          case 31:
+            _context2.prev = 31;
             _context2.t0 = _context2["catch"](0);
             console.error(_context2.t0);
 
-          case 17:
+          case 34:
           case "end":
             return _context2.stop();
         }
       }
-    }, _callee2, null, [[0, 14]]);
+    }, _callee2, null, [[0, 31]]);
   }));
   return _sellProd.apply(this, arguments);
 }
