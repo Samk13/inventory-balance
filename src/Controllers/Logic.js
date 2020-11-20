@@ -20,20 +20,11 @@ const filterStocksProd = (product, stocks) => {
   return stocks.filter((res) => res.name === product)[0];
 };
 
-const sellProdLogic = (
-  val,
-  product,
-  isAutoDelivered,
-  deliveryAmount,
-  stocks
-) => {
+const sellProdLogic = (val, product, stocks) => {
   const prod = filterStocksProd(product, stocks);
   prod.sold += parseInt(val);
   prod.quantity -= parseInt(val);
   prod.total = parseInt(prod.price) * parseInt(prod.sold);
-  if (isAutoDelivered && deliveryAmount) {
-    prod.delivered += parseInt(deliveryAmount);
-  }
   return;
 };
 

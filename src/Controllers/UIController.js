@@ -68,7 +68,7 @@ const init = () => {
 };
 
 // ----------------------------------------------deliver product
-const deliverProdLogic = (val, product) => {
+const deliverProdLogic = (val, product, stocks) => {
   filterStocksProd(product, stocks).delivered += parseInt(val);
   return listAllProducts(stocks);
 };
@@ -78,9 +78,12 @@ async function deliverProduct(userInput) {
     const selectedProd = await selectProduct();
     const deliveryAmount = await validateUserInput(userInput);
     const selected = stocks.filter((res) => res.name === selectedProd)[0];
-    selected.quantity < deliveryAmount
-      ? logRed("Deliver amount cannot exceed quantity!")
-      : deliverProdLogic(deliveryAmount, selectedProd);
+
+    if (selected.quantity < deliveryAmount) {
+      logRed("Deliver amount cannot exceed quantity!");
+    } else {
+      deliverProdLogic(deliveryAmount, selectedProd, stocks);
+    }
 
     return init();
   } catch (error) {
@@ -118,19 +121,26 @@ function sellMethodQuestion() {
 
 async function sellProd(userInput) {
   try {
-    const deliverQuestion = await sellMethodQuestion();
+    const autoDeliveryQuestion = await sellMethodQuestion();
     const selectedProduct = await selectProduct();
     const sellAmount = await validateUserInput(userInput);
-    filterStocksProd(selectedProduct, stocks).quantity < sellAmount
-      ? logRed("Sell amount cannot exceed quantity!")
-      : sellProdLogic(
-          sellAmount,
-          selectedProduct,
-          deliverQuestion,
-          userInput[3],
-          stocks
-        ),
+    if (filterStocksProd(selectedProduct, stocks).quantity < sellAmount) {
+      logRed("Sell amount cannot exceed quantity!");
+    } else {
+      if (autoDeliveryQuestion) {
+        if (!userInput[3]) {
+          const deliverAmount = await validateUserInput(userInput);
+          sellProdLogic(sellAmount, selectedProduct, stocks);
+          deliverProdLogic(deliverAmount, selectedProduct, stocks);
+        } else {
+          sellProdLogic(sellAmount, selectedProduct, stocks);
+          deliverProdLogic(userInput[3], selectedProduct, stocks);
+        }
+        return init();
+      }
+      sellProdLogic(sellAmount, selectedProduct, stocks);
       listAllProducts(stocks);
+    }
 
     return init();
   } catch (error) {

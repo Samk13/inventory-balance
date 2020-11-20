@@ -115,7 +115,13 @@ function _deliverProduct() {
             selected = stocks.filter(function (res) {
               return res.name === selectedProd;
             })[0];
-            selected.quantity < deliveryAmount ? logRed("Deliver amount cannot exceed quantity!") : deliverProdLogic(deliveryAmount, selectedProd);
+
+            if (selected.quantity < deliveryAmount) {
+              logRed("Deliver amount cannot exceed quantity!");
+            } else {
+              deliverProdLogic(deliveryAmount, selectedProd);
+            }
+
             return _context.abrupt("return", init());
 
           case 12:
@@ -188,7 +194,14 @@ function _sellProd() {
 
           case 9:
             sellAmount = _context2.sent;
-            filterStocksProd(selectedProduct, stocks).quantity < sellAmount ? logRed("Sell amount cannot exceed quantity!") : sellProdLogic(sellAmount, selectedProduct, deliverQuestion, userInput[3], stocks), listAllProducts(stocks);
+
+            if (filterStocksProd(selectedProduct, stocks).quantity < sellAmount) {
+              logRed("Sell amount cannot exceed quantity!");
+            } else {
+              sellProdLogic(sellAmount, selectedProduct, deliverQuestion, userInput[3], stocks);
+              listAllProducts(stocks);
+            }
+
             return _context2.abrupt("return", init());
 
           case 14:
@@ -231,8 +244,7 @@ function _validateUserInput() {
                     return valid || "Please enter a number";
                   }
                 }).then(function (answers) {
-                  value = answers.amount;
-                  resolve(value);
+                  resolve(answers.amount);
                 })["catch"](function (err) {
                   return logRed(err.message);
                 });
