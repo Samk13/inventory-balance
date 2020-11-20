@@ -51,7 +51,18 @@ git clone https://github.com/Samk13/inventory-balance.git
 cd inventory-balance
 
 npm install
+node src/index.js
+```
+
+## for legacy cases
+
+```zsh
 npm run build
 node dist/index.js
+```
 
+## to run tests
+
+```zsh
+npm run test
 ```
