@@ -20,7 +20,9 @@ var configValues = {
   sellMaxVal: 100000,
   defaultProductCount: 100,
   defaultPrice: 10,
-  defaultDeliveredNumber: 0
+  defaultDeliveredNumber: 0,
+  priceMinimumAmountDiscount: 3,
+  priceDiscount: 1 / 4 * 100
 };
 module.exports = {
   actions: actions,
