@@ -169,6 +169,14 @@ async function sellProd(userInput) {
 
 // ----------------------------------------------deliver product
 const deliverProdLogic = (val, product, stocks) => {
+  if (
+    filterStocksProd(product, stocks).delivered >
+      filterStocksProd(product, stocks).sold ||
+    val > filterStocksProd(product, stocks).sold
+  ) {
+    logRed("Deliver amount cannot exceed quantity!");
+    return;
+  }
   filterStocksProd(product, stocks).delivered += parseInt(val);
   return listAllProducts(stocks);
 };
@@ -177,9 +185,9 @@ async function deliverProduct(userInput) {
   try {
     const selectedProd = await selectProduct();
     const deliveryAmount = await validateUserInput(userInput);
-    const selected = filterStocksProd(selectedProd, stocks);
+    const filteredProdSold = filterStocksProd(selectedProd, stocks).sold;
 
-    if (selected.quantity < deliveryAmount) {
+    if (filteredProdSold < deliveryAmount) {
       logRed("Deliver amount cannot exceed quantity!");
     } else {
       deliverProdLogic(deliveryAmount, selectedProd, stocks);

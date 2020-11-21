@@ -35,7 +35,7 @@ const sellProdLogic = (val, prod) => {
     logYellow(
       `\nOn every ${configValues.priceMinimumAmountDiscount} products you buy, `
     );
-    logYellow("you get one for FREE! ^_^");
+    logYellow("you get one for FREE! ^_^\n");
     return;
   }
   prod.total = parseInt(prod.price) * parseInt(prod.sold);
