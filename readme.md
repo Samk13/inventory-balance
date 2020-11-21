@@ -22,7 +22,7 @@ The user interface must contain three functions:
 
 ## Addition
 
-[x] Write an alternative algorithm that makes automatic delivery of the double number at sale. That is, if you sell 5, 10 are automatically delivered.
+[x] Write an alternative algorithm that makes automatic delivery of the double number at sale. That is, if you sell S5,10 are automatically delivered.
 
 [x] Implement a mechanism for switching between the algorithm in the previous point and the original version.
 
