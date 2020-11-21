@@ -10,6 +10,8 @@ const {
   logRed,
 } = require("../utils/index.js");
 
+const { validateUserInputQuestions } = require("./InputValidationController");
+
 const {
   createNewProductLogic,
   listProductLogic,
@@ -35,19 +37,19 @@ const init = () => {
 
       if (commands.includes(input[0])) {
         switch (input[0]) {
-          case "c":
+          case availableCommands.createNewProduct:
             createProduct();
             break;
-          case "L":
+          case availableCommands.listProduct:
             listProductsWithInit();
             break;
-          case "l":
+          case availableCommands.deliverProduct:
             deliverProduct(input);
             break;
-          case "S":
+          case availableCommands.sellProduct:
             sellProd(input);
             break;
-          case "SP":
+          case availableCommands.sellPackage:
             sellPackage(input);
             break;
           default:
@@ -143,17 +145,19 @@ async function sellProd(userInput) {
     const productSelectQuestion = await selectProduct();
     const filterProduct = filterStocksProd(productSelectQuestion, stocks);
     const sellAmount = await validateUserInput(userInput);
+
     if (filterStocksProd(productSelectQuestion, stocks).quantity < sellAmount) {
       logRed("Sell amount cannot exceed quantity!");
     } else {
       if (autoDeliveryQuestion) {
         if (!userInput[3]) {
+          logGreen("For delivery, you didn't provide me with the amount:");
           const deliverAmount = await validateUserInput(userInput);
           sellProdLogic(sellAmount, filterProduct);
-          deliverProdLogic(deliverAmount, productSelectQuestion, stocks);
+          deliverProdValidate(deliverAmount, productSelectQuestion, stocks);
         } else {
           sellProdLogic(sellAmount, filterProduct);
-          deliverProdLogic(userInput[3], productSelectQuestion, stocks);
+          deliverProdValidate(userInput[3], productSelectQuestion, stocks);
         }
         return init();
       }
@@ -168,7 +172,7 @@ async function sellProd(userInput) {
 }
 
 // ----------------------------------------------deliver product
-const deliverProdLogic = (val, product, stocks) => {
+const deliverProdValidate = (val, product, stocks) => {
   if (
     filterStocksProd(product, stocks).delivered >
       filterStocksProd(product, stocks).sold ||
@@ -182,17 +186,13 @@ const deliverProdLogic = (val, product, stocks) => {
 };
 
 async function deliverProduct(userInput) {
+  logGreen("\nDeliver Product");
+  logGreen("__________________\n");
   try {
     const selectedProd = await selectProduct();
     const deliveryAmount = await validateUserInput(userInput);
-    const filteredProdSold = filterStocksProd(selectedProd, stocks).sold;
 
-    if (filteredProdSold < deliveryAmount) {
-      logRed("Deliver amount cannot exceed quantity!");
-    } else {
-      deliverProdLogic(deliveryAmount, selectedProd, stocks);
-    }
-
+    deliverProdValidate(deliveryAmount, selectedProd, stocks);
     return init();
   } catch (error) {
     console.error(error);
@@ -211,14 +211,11 @@ async function validateUserInput(input) {
           name: "amount",
           message: "Please enter the amount you want",
           validate: function (value) {
-            var valid = !isNaN(parseInt(value));
-            return valid || "Please enter a number";
+            return validateUserInputQuestions(value, "amount");
           },
-        })
-          .then((answers) => {
-            resolve(answers.amount);
-          })
-          .catch((err) => logRed(err.message));
+        }).then((answers) => {
+          resolve(parseInt(answers.amount));
+        });
       } else {
         resolve(value);
       }
@@ -320,13 +317,7 @@ async function createProduct() {
           message: "Please enter your product name",
           name: "name",
           validate: function (value) {
-            // No it does not accept number or spaces
-            let pass = value.match(/^([a-zA-Z_$][a-zA-Z\\d_$]*)$/i);
-            if (pass) {
-              return true;
-            }
-
-            return "Please enter a valid string with at least 3 chars";
+            return validateUserInputQuestions(value, "name");
           },
         },
         {
@@ -334,11 +325,7 @@ async function createProduct() {
           message: "Enter product count",
           name: "quantity",
           validate: function (value) {
-            if (Math.sign(value) === 1 && value < configValues.priceMaxVal) {
-              return true;
-            }
-
-            return "Please enter a valid number";
+            return validateUserInputQuestions(value, "quantity");
           },
           default: function () {
             return configValues.defaultProductCount;
@@ -349,11 +336,7 @@ async function createProduct() {
           message: "Enter product package number",
           name: "package",
           validate: function (value) {
-            if (Math.sign(value) === 1 && value < configValues.priceMaxVal) {
-              return true;
-            }
-
-            return "Please enter a valid number";
+            return validateUserInputQuestions(value, "package");
           },
           default: function () {
             return 1;
@@ -364,10 +347,7 @@ async function createProduct() {
           message: "Enter product price in SEK",
           name: "price",
           validate: function (value) {
-            if (Math.sign(value) === 1) {
-              return true;
-            }
-            return "Please enter a valid number";
+            return validateUserInputQuestions(value, "price");
           },
           default: function () {
             return configValues.defaultPrice;
@@ -378,17 +358,10 @@ async function createProduct() {
           message: "How many have been sold?",
           name: "sold",
           validate: function (value) {
-            if (
-              !isNaN(value) &&
-              value >= 0 &&
-              value < configValues.priceMaxVal
-            ) {
-              return true;
-            }
-            return "Please enter a valid number";
+            return validateUserInputQuestions(value, "sold");
           },
           default: function () {
-            return configValues.defaultDeliveredNumber;
+            return configValues.defaultSoldNumber;
           },
         },
         {
@@ -396,14 +369,7 @@ async function createProduct() {
           message: "How many have been delivered?",
           name: "delivered",
           validate: function (value) {
-            if (
-              !isNaN(value) &&
-              value >= 0 &&
-              value < configValues.deliveredMaxVal
-            ) {
-              return true;
-            }
-            return "Please enter a valid number";
+            return validateUserInputQuestions(value, "delivered");
           },
           default: function () {
             return configValues.defaultDeliveredNumber;

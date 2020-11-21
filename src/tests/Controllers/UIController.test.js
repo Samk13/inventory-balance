@@ -1,7 +1,9 @@
 // const { sellProdLogic } = require("../../Controllers/UIController.js");
 
-it("should work ", () => {
-  expect(1).toBe(1);
+describe("UserInterface Controller tests", () => {
+  it("should pass the test", () => {
+    expect(1).toBe(1);
+  });
 });
 // const mockFn = jest.fn();
 

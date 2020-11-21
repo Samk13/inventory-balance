@@ -7,20 +7,23 @@ const actions = {
 };
 
 const availableCommands = {
-  createNewProduct: "c",
+  createNewProduct: "C",
   listProduct: "L",
   sellProduct: "S",
-  deliverProduct: "l",
+  deliverProduct: "I",
   sellPackage: "SP",
 };
 
 const configValues = {
   priceMaxVal: 1000000,
+  quantityMaxVal: 500,
   deliveredMaxVal: 1000000,
   sellMaxVal: 100000,
   defaultProductCount: 100,
+  maxProductCount: 1000,
   defaultPrice: 10,
   defaultDeliveredNumber: 0,
+  defaultSoldNumber: 0,
   priceMinimumAmountDiscount: 3,
   priceDiscount: (1 / 4) * 100,
 };
