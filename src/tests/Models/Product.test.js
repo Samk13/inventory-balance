@@ -7,8 +7,14 @@ beforeEach(() => {
   Product.mockClear();
 });
 
-it("Check if the consumer called the class constructor", () => {
-  // eslint-disable-next-line no-unused-vars
-  const consumeProduct = new Product();
-  expect(Product).toHaveBeenCalledTimes(1);
+describe("Product class testing", () => {
+  it("Checks if the user called the class constructor", () => {
+    // eslint-disable-next-line no-unused-vars
+    const consumeProduct = new Product();
+    expect(Product).toHaveBeenCalledTimes(1);
+  });
+
+  it("Create new class to be an instance of Product", () => {
+    expect(new Product()).toBeInstanceOf(Product);
+  });
 });

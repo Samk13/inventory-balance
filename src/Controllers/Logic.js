@@ -19,32 +19,40 @@ const listProductLogic = (stocks) => {
   return results;
 };
 
-const filterStocksProd = (product, stocks) => {
-  return stocks.filter((res) => res.name === product)[0];
-};
-
-const sellProdLogic = (val, prod) => {
-  prod.sold += parseInt(val);
-  prod.quantity -= parseInt(val);
-  if (parseInt(prod.sold) > parseInt(configValues.priceMinimumAmountDiscount)) {
-    prod.total =
+const sellProdLogic = (val, prodObj) => {
+  if (isNaN(parseInt(val))) {
+    throw new Error("the value you provide is not a number");
+  }
+  prodObj.sold += parseInt(val);
+  prodObj.quantity -= parseInt(val);
+  if (
+    parseInt(prodObj.sold) > parseInt(configValues.priceMinimumAmountDiscount)
+  ) {
+    prodObj.total =
       calculateDiscount(
-        parseInt(prod.price),
+        parseInt(prodObj.price),
         parseInt(configValues.priceDiscount)
-      ) * parseInt(prod.sold);
+      ) * parseInt(prodObj.sold);
     logYellow(
       `\nOn every ${configValues.priceMinimumAmountDiscount} products you buy, `
     );
     logYellow("you get one for FREE! ^_^\n");
     return;
   }
-  prod.total = parseInt(prod.price) * parseInt(prod.sold);
+  prodObj.total = parseInt(prodObj.price) * parseInt(prodObj.sold);
   return;
 };
 
 const calculateDiscount = (price, discount) => {
+  if (isNaN(price) || isNaN(discount)) {
+    throw new Error("price and discount should be a number!");
+  }
   // or floor ?
   return Math.ceil(price - (price * discount) / 100);
+};
+
+const filterStocksProd = (product, stocks) => {
+  return stocks.filter((res) => res.name === product)[0];
 };
 
 const filterPackage = (answerNum, packagesArr) =>
