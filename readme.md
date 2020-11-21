@@ -28,9 +28,7 @@ The user interface must contain three functions:
 
 [x] Add more than one product and handle product numbers at sales and delivery.
 
-### TODO
-
-[-] Add the possibility to sell item packages that are predefined in the code, eg "SP1" means "sell 1 of package 1" where package 1 can contain one or more products (and then all must be counted down in stock at sale).
+[x] Add the possibility to sell item packages that are predefined in the code, eg "SP1" means "sell 1 of package 1" where package 1 can contain one or more products (and then all must be counted down in stock at sale).
 
 [x] Add item prices and show total amounts at sale.
 
