@@ -52,7 +52,7 @@ npm install
 node src/index.js
 ```
 
-## for legacy cases
+## for old versions
 
 ```zsh
 npm run build
@@ -67,14 +67,15 @@ npm run test
 
 ## App features
 
-- The application is case sensitive, so make sure to enter the commands with upperCase.
-- when starting the app it store will be empty and you will get a message :
+- The application is case sensitive, make sure to enter commands with upperCase.
+- Then initializing the app, the store will be empty and you will get a message :
 
 ```zsh
 ? What action you wanna take?
 ```
 
-- press enter or any char that is not part of application commands, will show a message with all available ones.
+- This is basically the main menu, everything is straight forward, otherwise here is a brief explanation:
+- Press enter or any char that is not part of application commands, it will show a message with all available commands.
 
 ```zsh
 I didn't get your command!
@@ -96,10 +97,10 @@ And Yes! it's case Sensitive
 - `sellProduct => S, deliverProduct => I, sellPackage=> SP` can accept number after the command
   for example: `S1, I33 or SP3`
 
-- Start with any command other then Create will route you to create a new Product and if you enter any numbers these numbers will be ignored
+- Start with any command other than Create 'C', it will route you to create a new product and if you enter any numbers those numbers will be ignored
 
 ```zsh
-? What action you wanna take?
+? What action you want to take?
 S5
 
 Seems like you have no stocks yet!
@@ -107,22 +108,22 @@ Seems like you have no stocks yet!
 ? CreateNewStock: (Y/n)
 ```
 
-- After every command is executed, you will be routed back the main menu question:
+- When every command is executed, you will be routed back the main menu question:
   `? What action you wanna take?`
 
-- if you choose Y for creating new product, you will be asked 6 questions: every input is validated, all inputs except name have default values, so you can just press enter to finis.
+- If you choose Y for creating new product, you will be asked 6 questions: every input is validated, all inputs except name have default values, thus you can press enter to finish.
 
-## C -> Create new Product:
+## C = Create new Product:
 
--product name: Should be a string start with char, accept numbers, spaces, Swedish chars like `äöå` and rejects special chars, min 4, max 16 chars.
+- Product name: should be a string start with char, accept numbers, spaces, Swedish chars like `äöå` and rejects special chars, min 4, max 16 chars.
 
-- product ID : is auto generated based on now() and random math
-- product count: is a Number between 1 and quantityMaxVal that you can edit in central file: `config.js`
-- package number: you have 2 options only 1 or 2
-- Product Price in SEK: minimum 0 and max
+- Product ID: is auto generated based on now() and random math
+- Product count: is a number between 1 and quantityMaxVal that you can edit in central file: (config.js)[https://github.com/Samk13/inventory-balance/blob/main/src/config.js]
+- Package number: you have 2 options only 1 or 2
+- Product price in SEK: minimum 0 and max
 - Product sold : between 0 and priceMaxVal in config.js
-- product delivered between 0 and priceMaxVal in config.js
-  then You will see a table of all products
+- Product delivered between 0 and priceMaxVal in config.js
+  then you will see a table of all products
 
 ```zsh
 ? Please enter your product name: yourProductName01
@@ -133,46 +134,47 @@ Seems like you have no stocks yet!
 ? How many have been delivered? 0
 ```
 
-- when you create your first product, you will be able to perform other commands like list, sell, sell package or deliver
+- When you create your first product, you will be able to perform other commands like list, sell, sell package or deliver
 
-## L -> List Products:
+## L = List Products:
 
 Will create a table of all products in the store array and add kr to price and total, X to quantity and delivered
 
-## S -> Sell product S{N}
+## S = Sell product S{N}
 
 If you have no products you will be redirected to create new product logic, then:
-you have couple options :
-all available command will works:
-S , S5 , S5,5, S5-3, S2.5, S4 4,
+you have couple options:
+all these available command will works:
+S, S5, S5, 5, S5-3, S2.5, S4 4,
 
-- if you enter double value like S12,12 and you choose to sell without auto delivery, the second value will get ignored with no errors for better user experience.
+- If you enter double value like S12,12 and you choose to sell without auto delivery, the second value will get ignored with no errors for better user experience.
 
 > Sell without delivery
 > Sell with auto delivery
-> Both will lead to ask you to choose between available products in the stocks store
 
-- if you did not enter your selling amount ? you will have a question to enter a selling number
-- if you choose with auto delivery and you didn't provide the delivery amount, you will see a question regarding that
+Both options will lead to ask you to choose between available products in the stocks store
 
-- the selling amount cannot ecceed the product amount, if you will try to do that you will get an error
+- If you did not enter your selling amount, you will have a question to enter a selling number
+- If you choose with auto delivery and you didn't provide the delivery amount, you will see a question regarding that
 
-## I -> delIver product I{N}
+- The selling amount cannot exceed the product amount, if you will try to do that you will get an error
 
-as the selling product you will be prompted to choose the product you want to deliver.
+## I = delIver product I{N}
 
-- the deliver amount should not ecceed the selling amount or you will get an error
+As the selling product command, you will be prompted to choose the product you want to deliver.
 
-## SP -> sell package SP{N}
+- The deliver amount should not exceed the selling amount or you will get an error
 
-there 2 available package you can choose between, and the number after SP is the amount you want to sell
+## SP = sell package SP{N}
 
-- it will change the quantity for all package items and change the total
-  if the selling amount is more then 3 items you will get a discount,
+There are 2 available packages you can choose between and the number after SP is the amount you want to sell
+
+- It will change the quantity for all packages items and change the total
+  if the selling amount is more then 3 items you will get a discount
 
 ## discount
 
-I build the discount logic so you can change how much and after how many sells from config.js, for the convenient
+I built the discount logic in order for you to be able to change how much percentage you wish, and after how many sells from config.js, for the convenient
 
 ## testing
 
@@ -184,8 +186,8 @@ npm run test
 
 ## extra backwards compatibility feature:
 
-adding babel so you can change the ES target
-to build it
+Adding babel in order for you to can change the ES target
+to build the dist files:
 
 ```zsh
 npm run build
