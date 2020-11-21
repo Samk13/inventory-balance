@@ -23,8 +23,7 @@ const filterStocksProd = (product, stocks) => {
   return stocks.filter((res) => res.name === product)[0];
 };
 
-const sellProdLogic = (val, product, stocks) => {
-  const prod = filterStocksProd(product, stocks);
+const sellProdLogic = (val, prod) => {
   prod.sold += parseInt(val);
   prod.quantity -= parseInt(val);
   if (parseInt(prod.sold) > parseInt(configValues.priceMinimumAmountDiscount)) {
@@ -36,7 +35,7 @@ const sellProdLogic = (val, product, stocks) => {
     logYellow(
       `\nOn every ${configValues.priceMinimumAmountDiscount} products you buy, `
     );
-    logYellow("you get one for FREE! ^_^");
+    logYellow("you get one for FREE! ^_^\n");
     return;
   }
   prod.total = parseInt(prod.price) * parseInt(prod.sold);
@@ -48,6 +47,9 @@ const calculateDiscount = (price, discount) => {
   return Math.ceil(price - (price * discount) / 100);
 };
 
+const filterPackage = (answerNum, packagesArr) =>
+  packagesArr.filter((prod) => parseInt(prod.package) === parseInt(answerNum));
+
 /**
  * Exports
  */
@@ -56,6 +58,7 @@ module.exports = {
   calculateDiscount,
   listProductLogic,
   filterStocksProd,
+  filterPackage,
   sellProdLogic,
   handleInput,
 };

@@ -22,15 +22,13 @@ The user interface must contain three functions:
 
 ## Addition
 
-[x] Write an alternative algorithm that makes automatic delivery of the double number at sale. That is, if you sell 5, 10 are automatically delivered.
+[x] Write an alternative algorithm that makes automatic delivery of the double number at sale. That is, if you sell S5,10 are automatically delivered.
 
 [x] Implement a mechanism for switching between the algorithm in the previous point and the original version.
 
 [x] Add more than one product and handle product numbers at sales and delivery.
 
-### TODO
-
-[-] Add the possibility to sell item packages that are predefined in the code, eg "SP1" means "sell 1 of package 1" where package 1 can contain one or more products (and then all must be counted down in stock at sale).
+[x] Add the possibility to sell item packages that are predefined in the code, eg "SP1" means "sell 1 of package 1" where package 1 can contain one or more products (and then all must be counted down in stock at sale).
 
 [x] Add item prices and show total amounts at sale.
 

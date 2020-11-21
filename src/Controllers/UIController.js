@@ -1,5 +1,5 @@
 const { Product } = require("../Models/Product.js");
-const { stocks } = require("../Store/index.js");
+const { stocks, packages } = require("../Store/index.js");
 const inquirer = require("inquirer");
 const { availableCommands, configValues, actions } = require("../config.js");
 const {
@@ -14,11 +14,12 @@ const {
   createNewProductLogic,
   listProductLogic,
   filterStocksProd,
+  filterPackage,
   sellProdLogic,
   handleInput,
 } = require("./Logic");
 
-//  ---------------------------------
+// ----------------------------------------------App initialization
 
 const init = () => {
   const prompt = inquirer.createPromptModule();
@@ -47,7 +48,7 @@ const init = () => {
             sellProd(input);
             break;
           case "SP":
-            logGreen("Sell packages");
+            sellPackage(input);
             break;
           default:
             init();
@@ -67,29 +68,46 @@ const init = () => {
     .catch((err) => console.error(err));
 };
 
-// ----------------------------------------------deliver product
-const deliverProdLogic = (val, product, stocks) => {
-  filterStocksProd(product, stocks).delivered += parseInt(val);
-  return listAllProducts(stocks);
-};
+// ----------------------------------------------Sell Package product
 
-async function deliverProduct(userInput) {
+const sellPackage = async (input) => {
+  logGreen("\nSell Package");
+  logGreen("__________________\n");
   try {
-    const selectedProd = await selectProduct();
-    const deliveryAmount = await validateUserInput(userInput);
-    const selected = stocks.filter((res) => res.name === selectedProd)[0];
+    const questionAnswers = await sellPackageQuestion();
+    const sellPackageAmount = await validateUserInput(input);
+    const selectedPackages = filterPackage(questionAnswers, packages);
 
-    if (selected.quantity < deliveryAmount) {
-      logRed("Deliver amount cannot exceed quantity!");
-    } else {
-      deliverProdLogic(deliveryAmount, selectedProd, stocks);
-    }
-
-    return init();
+    selectedPackages.forEach((prod) => {
+      sellProdLogic(sellPackageAmount, prod);
+    });
+    console.table(selectedPackages);
   } catch (error) {
     console.error(error);
   }
-}
+
+  init();
+};
+
+const sellPackageQuestion = () => {
+  return new Promise((resolve) => {
+    const prompt = inquirer.createPromptModule();
+    prompt({
+      type: "list",
+      name: "selectPackage",
+      message: "Please select from our available packages",
+      // Coding at friday night will make you hard code these choices -Bill Gates
+      choices: [1, 2],
+      filter: function (val) {
+        return val;
+      },
+    })
+      .then((answers) => {
+        resolve(answers.selectPackage);
+      })
+      .catch((err) => logRed(err));
+  });
+};
 
 // ----------------------------------------------Sell product
 
@@ -122,23 +140,24 @@ function sellMethodQuestion() {
 async function sellProd(userInput) {
   try {
     const autoDeliveryQuestion = await sellMethodQuestion();
-    const selectedProduct = await selectProduct();
+    const productSelectQuestion = await selectProduct();
+    const filterProduct = filterStocksProd(productSelectQuestion, stocks);
     const sellAmount = await validateUserInput(userInput);
-    if (filterStocksProd(selectedProduct, stocks).quantity < sellAmount) {
+    if (filterStocksProd(productSelectQuestion, stocks).quantity < sellAmount) {
       logRed("Sell amount cannot exceed quantity!");
     } else {
       if (autoDeliveryQuestion) {
         if (!userInput[3]) {
           const deliverAmount = await validateUserInput(userInput);
-          sellProdLogic(sellAmount, selectedProduct, stocks);
-          deliverProdLogic(deliverAmount, selectedProduct, stocks);
+          sellProdLogic(sellAmount, filterProduct);
+          deliverProdLogic(deliverAmount, productSelectQuestion, stocks);
         } else {
-          sellProdLogic(sellAmount, selectedProduct, stocks);
-          deliverProdLogic(userInput[3], selectedProduct, stocks);
+          sellProdLogic(sellAmount, filterProduct);
+          deliverProdLogic(userInput[3], productSelectQuestion, stocks);
         }
         return init();
       }
-      sellProdLogic(sellAmount, selectedProduct, stocks);
+      sellProdLogic(sellAmount, filterProduct);
       listAllProducts(stocks);
     }
 
@@ -148,6 +167,37 @@ async function sellProd(userInput) {
   }
 }
 
+// ----------------------------------------------deliver product
+const deliverProdLogic = (val, product, stocks) => {
+  if (
+    filterStocksProd(product, stocks).delivered >
+      filterStocksProd(product, stocks).sold ||
+    val > filterStocksProd(product, stocks).sold
+  ) {
+    logRed("Deliver amount cannot exceed quantity!");
+    return;
+  }
+  filterStocksProd(product, stocks).delivered += parseInt(val);
+  return listAllProducts(stocks);
+};
+
+async function deliverProduct(userInput) {
+  try {
+    const selectedProd = await selectProduct();
+    const deliveryAmount = await validateUserInput(userInput);
+    const filteredProdSold = filterStocksProd(selectedProd, stocks).sold;
+
+    if (filteredProdSold < deliveryAmount) {
+      logRed("Deliver amount cannot exceed quantity!");
+    } else {
+      deliverProdLogic(deliveryAmount, selectedProd, stocks);
+    }
+
+    return init();
+  } catch (error) {
+    console.error(error);
+  }
+}
 // ----------------------------------------------Utils
 
 async function validateUserInput(input) {
@@ -281,22 +331,6 @@ async function createProduct() {
         },
         {
           type: "input",
-          message: "Enter product category",
-          name: "category",
-          validate: function (value) {
-            let pass = value.match(/^(?=.*[A-Za-z])[A-Za-z\d]{3,}$/i);
-            if (pass) {
-              return true;
-            }
-
-            return "Please enter a valid string with at least 3 chars";
-          },
-          default: function () {
-            return "general";
-          },
-        },
-        {
-          type: "input",
           message: "Enter product count",
           name: "quantity",
           validate: function (value) {
@@ -308,6 +342,21 @@ async function createProduct() {
           },
           default: function () {
             return configValues.defaultProductCount;
+          },
+        },
+        {
+          type: "input",
+          message: "Enter product package number",
+          name: "package",
+          validate: function (value) {
+            if (Math.sign(value) === 1 && value < configValues.priceMaxVal) {
+              return true;
+            }
+
+            return "Please enter a valid number";
+          },
+          default: function () {
+            return 1;
           },
         },
         {
