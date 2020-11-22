@@ -2,6 +2,7 @@ const {
   handleInput,
   createNewProductLogic,
   listProductLogic,
+  sellProdLogic,
 } = require("../../Controllers/Logic");
 const { Product } = require("../../Models/Product");
 
@@ -18,7 +19,7 @@ describe("handleInput", () => {
   });
 });
 
-describe("createNewProductLogic function tests", () => {
+describe("createNewProductLogic", () => {
   it("createNewProductLogic should return a new Product class instance", () => {
     const answers = {};
     const store = [];
@@ -27,7 +28,7 @@ describe("createNewProductLogic function tests", () => {
   });
 });
 
-describe("listProductLogic test functionality", () => {
+describe("listProductLogic", () => {
   it("listProductLogic should list all products in stock ", () => {
     const store = [
       {
@@ -56,5 +57,24 @@ describe("listProductLogic test functionality", () => {
         total: "0 KR",
       },
     ]);
+  });
+});
+
+describe("sellProdLogic", () => {
+  const product = {
+    id: 2097198,
+    name: "packageItem2",
+    category: "general",
+    package: 1,
+    quantity: 100,
+    price: 10,
+    delivered: 0,
+    sold: 0,
+    total: 0,
+  };
+  it(" if you pass wrong argument type", () => {
+    expect(() => {
+      sellProdLogic(undefined, product);
+    }).toThrow("the value you provide is not a number");
   });
 });
