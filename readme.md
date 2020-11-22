@@ -52,7 +52,7 @@ npm install
 node src/index.js
 ```
 
-## for old versions
+## for backwards compatible version of JavaScript
 
 ```zsh
 npm run build
