@@ -70,7 +70,7 @@ const init = () => {
     .catch((err) => console.error(err));
 };
 
-// ----------------------------------------------Sell Package product
+// ---------------------------------------------- Sell Package
 
 const sellPackage = async (input) => {
   logGreen("\nSell Package");
@@ -98,7 +98,7 @@ const sellPackageQuestion = () => {
       type: "list",
       name: "selectPackage",
       message: "Please select from our available packages",
-      // Coding at friday night will make you hard code these choices -Bill Gates
+      // Yes it's hard coded
       choices: [1, 2],
       filter: function (val) {
         return val;
@@ -111,7 +111,7 @@ const sellPackageQuestion = () => {
   });
 };
 
-// ----------------------------------------------Sell product
+// ---------------------------------------------- Sell product
 
 function sellMethodQuestion() {
   return new Promise((resolve) => {
@@ -171,7 +171,7 @@ async function sellProd(userInput) {
   }
 }
 
-// ----------------------------------------------deliver product
+// ---------------------------------------------- Deliver product
 const deliverProdValidate = (val, product, stocks) => {
   if (
     filterStocksProd(product, stocks).delivered >
@@ -198,7 +198,7 @@ async function deliverProduct(userInput) {
     console.error(error);
   }
 }
-// ----------------------------------------------Utils
+// ---------------------------------------------- Utils
 
 async function validateUserInput(input) {
   try {
@@ -277,7 +277,7 @@ const stocksHasProducts = () => {
   }
 };
 
-// ----------------------------------------------List product
+// ---------------------------------------------- List product
 
 async function listAllProducts(stocks) {
   try {
@@ -303,7 +303,7 @@ async function listProductsWithInit() {
   }
 }
 
-// ----------------------------------------------Create product
+// ---------------------------------------------- Create product
 
 async function createProduct() {
   try {
