@@ -13,8 +13,6 @@ function assertString(input) {
   }
 }
 
-//  I can use a library to better validate edge cases but I decided to write it my self for now
-
 const validateUserInputQuestions = (value, questionString) => {
   if (questionString === "name") {
     if (assertString(value)) {
@@ -25,7 +23,7 @@ const validateUserInputQuestions = (value, questionString) => {
         return true;
       }
 
-      return "Please enter a valid string with at least 4 chars and ";
+      return "Please enter a valid string with at least 4 chars and";
     }
   } else if (questionString === "quantity") {
     if (Math.sign(value) === 1 && value <= configValues.quantityMaxVal) {
@@ -67,11 +65,6 @@ const validateUserInputQuestions = (value, questionString) => {
       return true;
     }
     return "Please enter a valid number";
-  } else {
-    console.log(
-      "Your input did not match any case, you probably doing something wrong here "
-    );
-    return false;
   }
   return false;
 };
