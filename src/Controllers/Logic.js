@@ -45,13 +45,19 @@ const sellProdLogic = (val, prodObj) => {
 
 const calculateDiscount = (price, discount) => {
   if (isNaN(price) || isNaN(discount)) {
-    throw new Error("price and discount should be a number!");
+    throw new Error("Arguments should be a number!");
   }
   // or floor ?
   return Math.ceil(price - (price * discount) / 100);
 };
 
 const filterStocksProd = (product, stocks) => {
+  if (typeof product !== "string") {
+    throw new Error("Input should be a string");
+  }
+  if (typeof stocks !== "object" || stocks.length === 0) {
+    throw new Error("Unable to filter in an empty or undefined array");
+  }
   return stocks.filter((res) => res.name === product)[0];
 };
 
